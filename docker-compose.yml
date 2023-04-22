@@ -1,0 +1,71 @@
+version: '3'
+services:
+  api:
+    container_name: api
+    build: .
+    restart: always
+    ports:
+      - '80:80'
+    env_file:
+      - .env
+    command: npm run start:dev api --prefix /usr/src/server
+  auth:
+    container_name: auth
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: npm run start:dev auth --prefix /usr/src/server
+  media:
+    container_name: media
+    build:
+      context: .
+      dockerfile: ./apps/media/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: npm run start:dev media --prefix /usr/src/server
+  movie:
+    container_name: movie
+    build:
+      context: .
+      dockerfile: ./apps/movie/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: npm run start:dev movie --prefix /usr/src/server
+  person:
+    container_name: person
+    build:
+      context: .
+      dockerfile: ./apps/person/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: npm run start:dev person --prefix /usr/src/server
+  postgres:
+    container_name: postgres
+    image: postgres:15.2
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./scripts/init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.11-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq
+volumes:
+  pg_data:
+  rabbit_data:

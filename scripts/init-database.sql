@@ -1,0 +1,2 @@
+CREATE DATABASE movies;
+CREATE DATABASE users;

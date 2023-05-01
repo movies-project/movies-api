@@ -1,0 +1,97 @@
+# Flexible Configuration
+# https://www.krakend.io/docs/configuration/flexible-config/
+
+{
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "name": "movies-api-gateway",
+    "port": 80,
+    "endpoints": [
+        
+        {
+        "endpoint": "/profile",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/profile",
+            "host": [
+                "http://profile:3001"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/session/login",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/session/login",
+            "host": [
+                "http://auth:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/session/accessToken",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/session/accessToken",
+            "host": [
+                "http://auth:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/session/logout",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/session/logout",
+            "host": [
+                "http://auth:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/session/logoutAll",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/session/logoutAll",
+            "host": [
+                "http://auth:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+    ]
+}

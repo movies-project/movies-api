@@ -1,0 +1,34 @@
+{
+    "default": [
+        {
+            "endpoint": "/profile",
+            "backend": "/profile",
+            "host": "http://profile:3001",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/login",
+            "backend": "/session/login",
+            "host": "http://auth:3000",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/accessToken",
+            "backend": "/session/accessToken",
+            "host": "http://auth:3000",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/logout",
+            "backend": "/session/logout",
+            "host": "http://auth:3000",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/logoutAll",
+            "backend": "/session/logoutAll",
+            "host": "http://auth:3000",
+            "method": "POST"
+        }
+    ]
+}

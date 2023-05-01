@@ -72,6 +72,24 @@
       "compilerOptions": {
         "tsConfigPath": "libs/config/tsconfig.lib.json"
       }
+    },
+    "profile": {
+      "type": "application",
+      "root": "apps/profile",
+      "entryFile": "main",
+      "sourceRoot": "apps/profile/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/profile/tsconfig.app.json"
+      }
+    },
+    "guards": {
+      "type": "library",
+      "root": "libs/guards",
+      "entryFile": "index",
+      "sourceRoot": "libs/guards/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/guards/tsconfig.lib.json"
+      }
     }
   }
 }

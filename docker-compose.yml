@@ -4,8 +4,6 @@ services:
     container_name: api
     build: .
     restart: always
-    ports:
-      - '80:80'
     env_file:
       - .env
     command: npm run start:dev api --prefix /usr/src/server
@@ -50,6 +48,16 @@ services:
       - .env
     command: npm run start:dev person --prefix /usr/src/server
 
+  profile:
+    container_name: profile
+    build:
+      context: .
+      dockerfile: ./apps/profile/Dockerfile
+    restart: always
+    env_file:
+      - .env
+    command: npm run start:dev profile --prefix /usr/src/server
+
   postgres:
     container_name: postgres
     image: postgres:15.2
@@ -67,12 +75,40 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3.11-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
     ports:
       - "5672:5672"
       - "15672:15672"
     volumes:
       - rabbit_data:/var/lib/rabbitmq
 
+  redis:
+    container_name: redis
+    image: redis:7.2-rc1
+    command: redis-server --requirepass redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/var/lib/redis
+
+  krakend:
+    container_name: krakend
+    image: devopsfaith/krakend:2
+    ports:
+      - '80:80'
+    environment:
+      - FC_ENABLE=1
+      - FC_TEMPLATES=/etc/krakend/templates
+      - FC_SETTINGS=/etc/krakend/settings
+      - FC_PARTIALS=/etc/krakend/partials
+      - FC_OUT=krakend.yml
+    volumes:
+      - ./krakend:/etc/krakend
+    command: krakend run -c /etc/krakend/krakend.tmpl
+
 volumes:
   pg_data:
   rabbit_data:
+  redis_data:

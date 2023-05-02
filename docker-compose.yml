@@ -106,7 +106,7 @@ services:
       - FC_OUT=krakend.yml
     volumes:
       - ./krakend:/etc/krakend
-    command: krakend run -c /etc/krakend/krakend.tmpl
+    command: /bin/sh -c "krakend run -c /etc/krakend/krakend.tmpl"
 
 volumes:
   pg_data:

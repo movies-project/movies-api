@@ -26,7 +26,7 @@ export class ProfileService {
 
     // Создадим профиль в базе данных
     const userId = user.id;
-    await this.profileRepository.create({...data, userId});
-    return {userId};
+    const profile = await this.profileRepository.create({...data, userId});
+    return profile.id;
   }
 }

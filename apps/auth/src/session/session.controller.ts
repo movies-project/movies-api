@@ -1,13 +1,18 @@
 import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@app/guards/jwt.guard";
 import { SessionService } from "./session.service";
 import { LoginData } from "./dto/login.dto";
+import { RefreshTokenDto } from "./dto/refresh-token.dto";
 
+@ApiTags('Сессии')
 @Controller('session')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 
+  @ApiOperation({ summary: 'Авторизация пользователя' })
+  @ApiOkResponse({ description: 'Успешная авторизация пользователя' })
   @Post('login')
   async login(@Body() data: LoginData) {
     return {
@@ -15,8 +20,10 @@ export class SessionController {
     };
   }
 
+  @ApiOperation({ summary: 'Генерация токена доступа' })
+  @ApiOkResponse({ description: 'Успешная генерация токена доступа' })
   @Post('accessToken')
-  async generateAccessToken(@Body() data: { refreshToken: string }) {
+  async generateAccessToken(@Body() data: RefreshTokenDto) {
     return {
       'accessToken': await this.sessionService.generateAccessToken(data.refreshToken)
     };
@@ -34,15 +41,22 @@ export class SessionController {
     }
   }
 
-  @Post('logout')
+  @ApiOperation({ summary: 'Выход из аккаунта' })
+  @ApiOkResponse({ description: 'Успешный выход из системы' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard())
+  @Post('logout')
   async logout(@Req() req: Request) {
     return this.sessionService.logout(req['userId'], req['userSession']);
   }
 
-  @Post('logoutAll')
+  @ApiOperation({ summary: 'Выход из всех устройств' })
+  @ApiOkResponse({ description: 'Успешный выход из всех устройств' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard())
+  @Post('logoutAll')
   async logoutAll(@Req() req: Request) {
-    return this.sessionService.logoutAll(req['userId']);
+    await this.sessionService.logoutAll(req['userId']);
+    return { status: 'success' }
   }
 }

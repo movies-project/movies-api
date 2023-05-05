@@ -1,3 +1,3 @@
 export const apiConfig = {
-  PORT: 80
+  PORT: 3000
 }

@@ -9,15 +9,66 @@
     "endpoints": [
         
         {
-        "endpoint": "/profile",
+        "endpoint": "/docs",
         "output_encoding": "no-op",
-        "method": "POST",
+        "method": "GET",
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/profile",
+            "url_pattern": "/docs",
             "host": [
-                "http://profile:3001"
+                "http://api:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/docs/{file}",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/docs/{file}",
+            "host": [
+                "http://api:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/favicon.ico",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/favicon.ico",
+            "host": [
+                "http://api:3000"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/api/service-docs/{name}",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/api/service-docs/{name}",
+            "host": [
+                "http://api:3000"
             ],
             "extra_config": {
                 
@@ -34,7 +85,7 @@
             "encoding": "no-op",
             "url_pattern": "/session/login",
             "host": [
-                "http://auth:3000"
+                "http://auth:3001"
             ],
             "extra_config": {
                 
@@ -51,7 +102,7 @@
             "encoding": "no-op",
             "url_pattern": "/session/accessToken",
             "host": [
-                "http://auth:3000"
+                "http://auth:3001"
             ],
             "extra_config": {
                 
@@ -68,7 +119,7 @@
             "encoding": "no-op",
             "url_pattern": "/session/logout",
             "host": [
-                "http://auth:3000"
+                "http://auth:3001"
             ],
             "extra_config": {
                 
@@ -85,7 +136,24 @@
             "encoding": "no-op",
             "url_pattern": "/session/logoutAll",
             "host": [
-                "http://auth:3000"
+                "http://auth:3001"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/profile",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/profile",
+            "host": [
+                "http://profile:3002"
             ],
             "extra_config": {
                 

@@ -4,8 +4,6 @@ services:
     container_name: api
     build: .
     restart: always
-    ports:
-      - '81:81'
     env_file:
       - .env
     command: npm run start:dev api --prefix /usr/src/server

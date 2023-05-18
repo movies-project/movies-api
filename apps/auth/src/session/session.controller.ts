@@ -1,9 +1,10 @@
 import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
+ 
 import { JwtAuthGuard } from "@app/guards/jwt.guard";
 import { SessionService } from "./session.service";
-import { LoginData } from "./dto/login.dto";
+import { LoginDto } from "./dto/login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
 
 @ApiTags('Сессии')
@@ -14,7 +15,7 @@ export class SessionController {
   @ApiOperation({ summary: 'Авторизация пользователя' })
   @ApiOkResponse({ description: 'Успешная авторизация пользователя' })
   @Post('login')
-  async login(@Body() data: LoginData) {
+  async login(@Body() data: LoginDto) {
     return {
       'refreshToken': await this.sessionService.login(data.email, data.password)
     };
@@ -60,3 +61,4 @@ export class SessionController {
     return { status: 'success' }
   }
 }
+ 

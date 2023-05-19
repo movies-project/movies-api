@@ -17,8 +17,12 @@ export class UserService {
   async create(userDto: CreateUserDto) {
     const saltRounds = bcryptConfig.AUTH_SALT_ROUNDS;
     const passwordHash = await bcrypt.hash(userDto.password, saltRounds);
+
     // возвращаем user
-    return this.userRepository.create({ userDto.email, passwordHash });
+    return this.userRepository.create({
+      email: userDto.email,
+      passwordHash
+    });
   }
 
   async findByEmail(email: string) {

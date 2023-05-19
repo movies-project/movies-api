@@ -8,21 +8,22 @@ export function JwtAuthGuard(role?: string) {
   class JwtAuthGuardMixin implements CanActivate {
     constructor(
       @Inject(rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS.name)
-      public readonly authService: ClientProxy,
+      public readonly authApp: ClientProxy,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest();
-      const authorization = request.headers.authorization;
+      // Получаем header авторизации (тип токена и сам токен)
+      const authHeader = request.headers.authorization;
 
-      if (!authorization || !authorization.startsWith('Bearer ')) {
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return false;
       }
 
-      const accessToken = authorization.slice(7, authorization.length);
+      const accessToken = authHeader.slice(7, authHeader.length);
       // Проверка валидности access токена
       let authInfo = await firstValueFrom(
-        this.authService.send('session_verify_access_token', {accessToken, role})
+        this.authApp.send('session_verify_access_token', {accessToken, role})
       );
 
       if (!authInfo['authorized'])

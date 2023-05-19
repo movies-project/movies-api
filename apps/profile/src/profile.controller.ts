@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post } from "@nestjs/common";
 import { ApiCreatedResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ProfileService } from './profile.service';
-import { ProfileRegistrationData } from "./dto/register.dto";
+import { ProfileRegistrationDto } from "./dto/profile-registration.dto";
 
 @ApiTags('Профиль')
 @Controller('profile')
@@ -12,10 +12,10 @@ export class ProfileController {
   @ApiCreatedResponse({ description: 'Профиль успешно создан' })
   @HttpCode(201)
   @Post()
-  async create(@Body() data: ProfileRegistrationData) {
+  async createProfileAndUser(@Body() data: ProfileRegistrationDto) {
     return {
       status: 'success',
-      profileId: await this.profileService.create(data)
+      profileId: await this.profileService.createProfileAndUser(data)
     };
   }
 }

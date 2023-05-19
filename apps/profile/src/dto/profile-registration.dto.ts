@@ -1,7 +1,7 @@
 import { IsEmail, IsMobilePhone, IsOptional, MaxLength, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class ProfileRegistrationData {
+export class ProfileRegistrationDto {
   @ApiProperty({
     example: 'example@gmail.com',
     description: 'Электронная почта пользователя',

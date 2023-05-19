@@ -3,9 +3,10 @@ import { Repository } from "sequelize-typescript";
 import { InjectModel } from "@nestjs/sequelize";
 import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
+ 
 import { rabbitmqConfig } from "@app/config";
 import { ProfileModel } from "./profile.model";
-import { ProfileRegistrationData } from "./dto/register.dto";
+import { ProfileRegistrationDto } from "./dto/profile-registration.dto";
 
 @Injectable()
 export class ProfileService {
@@ -16,7 +17,7 @@ export class ProfileService {
     private readonly userService: ClientProxy,
   ) {}
 
-  async create(data: ProfileRegistrationData) {
+  async createProfileAndUser(data: ProfileRegistrationDto) {
     // Произведем отбор необходимых данных (email, password) для создания пользователя
     const userData = { email: data.email, password: data.password };
     // Отправим запрос на создание пользователя на соответствующий микросервис

@@ -1,7 +1,7 @@
 import { Model, Table, Column, DataType } from "sequelize-typescript";
 
 @Table({ tableName: 'profile'} )
-export class ProfileModel extends Model {
+export class Profile extends Model {
   @Column({ type: DataType.BIGINT, primaryKey: true, autoIncrement: true })
   id: number;
 

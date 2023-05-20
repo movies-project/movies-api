@@ -2,13 +2,14 @@ import { IsEmail, IsMobilePhone, IsOptional, MaxLength, MinLength } from "class-
 import { ApiProperty } from "@nestjs/swagger";
 
 export class ProfileRegistrationDto {
+ 
   @ApiProperty({
     example: 'example@gmail.com',
     description: 'Электронная почта пользователя',
     format: 'email'
   })
   @IsEmail()
-  email: string;
+  readonly email: string;
 
   @ApiProperty({
     example: 'pass12345',
@@ -16,7 +17,7 @@ export class ProfileRegistrationDto {
   })
   @MinLength(8)
   @MaxLength(256)
-  password: string;
+  readonly password: string;
 
   @ApiProperty({
     example: 'Иван',
@@ -24,7 +25,7 @@ export class ProfileRegistrationDto {
   })
   @MinLength(1)
   @MaxLength(256)
-  name: string;
+  readonly name: string;
 
   @ApiProperty({
     example: 'Иванов',
@@ -32,7 +33,7 @@ export class ProfileRegistrationDto {
   })
   @MinLength(1)
   @MaxLength(256)
-  surname: string;
+  readonly surname: string;
 
   @ApiProperty({
     example: '+79000000000',
@@ -41,7 +42,7 @@ export class ProfileRegistrationDto {
   })
   @IsOptional()
   @IsMobilePhone()
-  phoneNumber: string;
+  readonly phoneNumber: string;
 
   @ApiProperty({
     example: 'Люблю смотреть фильмы',
@@ -49,5 +50,5 @@ export class ProfileRegistrationDto {
     required: false
   })
   @IsOptional()
-  selfDescription: string;
+  readonly selfDescription: string;
 }

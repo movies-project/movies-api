@@ -4,12 +4,12 @@ import { SequelizeModule } from "@nestjs/sequelize";
 import { postgresConfig, rabbitmqConfig } from "@app/config";
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
-import { ProfileModel } from "./profile.model";
+import { Profile } from "./profile.model";
 
 @Module({
   imports: [
     SequelizeModule.forRoot(postgresConfig.SEQUELIZE_OPTIONS),
-    SequelizeModule.forFeature([ProfileModel]),
+    SequelizeModule.forFeature([Profile]),
     ClientsModule.register([rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS]),
   ],
   controllers: [ProfileController],

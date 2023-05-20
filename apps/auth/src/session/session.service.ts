@@ -36,11 +36,11 @@ export class SessionService {
 
   async generateAccessToken(refreshToken: string) {
     // Раскодируем токен
-    const user = await this.verifyRefreshToken(refreshToken);
+    const decodedRefreshToken = await this.verifyRefreshToken(refreshToken);
 
     const payload = {
       // Сохраняем все данные пользователя из refreshToken, включая сессию
-      ...(_.omit(user, ['iat', 'exp', 'type'])),
+      ...(_.omit(decodedRefreshToken, ['iat', 'exp', 'type'])),
       type: ACCESS_TOKEN_TYPE
     };
 

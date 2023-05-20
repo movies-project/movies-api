@@ -1,0 +1,58 @@
+{
+    "default": [
+        {
+            "endpoint": "/docs",
+            "backend": "/docs",
+            "host": "http://api:3000",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/docs/{file}",
+            "backend": "/docs/{file}",
+            "host": "http://api:3000",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/favicon.ico",
+            "backend": "/favicon.ico",
+            "host": "http://api:3000",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/api/service-docs/{name}",
+            "backend": "/api/service-docs/{name}",
+            "host": "http://api:3000",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/session/login",
+            "backend": "/session/login",
+            "host": "http://auth:3001",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/accessToken",
+            "backend": "/session/accessToken",
+            "host": "http://auth:3001",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/logout",
+            "backend": "/session/logout",
+            "host": "http://auth:3001",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/session/logoutAll",
+            "backend": "/session/logoutAll",
+            "host": "http://auth:3001",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/profile",
+            "backend": "/profile",
+            "host": "http://profile:3002",
+            "method": "POST"
+        }
+    ]
+}

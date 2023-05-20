@@ -1,0 +1,29 @@
+# Flexible Configuration
+# https://www.krakend.io/docs/configuration/flexible-config/
+
+{
+    "$schema": "https://www.krakend.io/schema/v3.json",
+    "version": 3,
+    "name": "movies-api-gateway",
+    "port": 80,
+    "endpoints": [
+        {{ range $idx, $endpoint := .endpoints.default }}
+        {
+        "endpoint": "{{ $endpoint.endpoint }}",
+        "output_encoding": "no-op",
+        "method": "{{ $endpoint.method }}",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "{{ $endpoint.backend }}",
+            "host": [
+                "{{ $endpoint.host }}"
+            ],
+            "extra_config": {
+                {{ include "rate_limit_backend.json" }}
+            }
+        }]
+        },
+        {{ end }}
+    ]
+}

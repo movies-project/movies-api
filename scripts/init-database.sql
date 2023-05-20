@@ -1,2 +1,3 @@
 CREATE DATABASE movies;
 CREATE DATABASE users;
+CREATE DATABASE profiles;

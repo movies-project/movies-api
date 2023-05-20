@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule } from "@nestjs/microservices";
-import { rabbitmqConfig } from "@app/config";
+import { HttpModule } from "@nestjs/axios";
 import { ApiController } from "./api.controller";
+import { ApiService } from "./api.service";
 
 @Module({
-  imports: [
-    ClientsModule.register(rabbitmqConfig.RMQ_AUTH_OPTIONS)
-  ],
+  imports: [HttpModule],
   controllers: [ApiController],
-  providers: []
+  providers: [ApiService]
 })
 export class ApiModule {}

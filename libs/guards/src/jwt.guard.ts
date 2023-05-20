@@ -29,9 +29,8 @@ export function JwtAuthGuard(role?: string) {
       if (!authInfo['authorized'])
         return false;
 
-      request.userId = authInfo['id'];
-      request.userRole = authInfo['role'];
-      request.userSession = authInfo['session'];
+      request.user = authInfo['user'];
+      request.session = authInfo['session'];
       return true;
     }
   }

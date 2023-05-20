@@ -48,7 +48,8 @@ export class SessionController {
   @UseGuards(JwtAuthGuard())
   @Post('logout')
   async logout(@Req() req: Request) {
-    return this.sessionService.logout(req['userId'], req['userSession']);
+    const userInfo = req['user'];
+    return this.sessionService.logout(userInfo.id, req['session']);
   }
 
   @ApiOperation({ summary: 'Выход из всех устройств' })
@@ -57,7 +58,8 @@ export class SessionController {
   @UseGuards(JwtAuthGuard())
   @Post('logoutAll')
   async logoutAll(@Req() req: Request) {
-    await this.sessionService.logoutAll(req['userId']);
+    const userInfo = req['user'];
+    await this.sessionService.logoutAll(userInfo.id);
     return { status: 'success' }
   }
 }

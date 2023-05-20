@@ -38,30 +38,32 @@ export class SessionService {
     // Раскодируем токен
     const user = await this.verifyRefreshToken(refreshToken);
 
-    const userPayload = {
+    const payload = {
       // Сохраняем все данные пользователя из refreshToken, включая сессию
       ...(_.omit(user, ['iat', 'exp', 'type'])),
       type: ACCESS_TOKEN_TYPE
     };
 
     const options = jwtConfig.JWT_ACCESS_TOKEN_SIGN_OPTIONS;
-    return this.jwtService.sign(userPayload, options);
+    return this.jwtService.sign(payload, options);
   }
 
   async generateRefreshToken(user: User) {
-    const userPayload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
+    const payload = {
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      },
       session: uuid.v4(), // Храним для возможности блокировки access токенов по сессии
       type: REFRESH_TOKEN_TYPE
     };
     const options = jwtConfig.JWT_REFRESH_TOKEN_SIGN_OPTIONS;
-    const token = this.jwtService.sign(userPayload, options);
+    const token = this.jwtService.sign(payload, options);
 
     // Сохраним refresh token в базу данных Redis, чтобы
     // иметь возможность в любой момент его отозвать
-    const redisKey = SessionService.getRefreshTokenRedisPrefix(user.id.toString(), userPayload.session);
+    const redisKey = SessionService.getRefreshTokenRedisPrefix(user.id.toString(), payload.session);
     await this.redis.set(redisKey, '');
 
     // Настроим автоматическое удаление ключа после истечения срока действия токена
@@ -93,16 +95,16 @@ export class SessionService {
     }
 
     // Раскодируем токен
-    const user = this.jwtService.verify(accessToken, verifyOptions);
+    const decodedAccessToken = this.jwtService.verify(accessToken, verifyOptions);
 
-    if (user.type !== ACCESS_TOKEN_TYPE)
+    if (decodedAccessToken.type !== ACCESS_TOKEN_TYPE)
       throw new UnauthorizedException('invalid token type');
-    if (role && (role !== user.role))
+    if (role && (role !== decodedAccessToken.user.role))
       throw new ForbiddenException();
-    if (await isSessionBlacklisted(user.id, user.session))
+    if (await isSessionBlacklisted(decodedAccessToken.user.id, decodedAccessToken.session))
       throw new UnauthorizedException('session expired');
 
-    return user;
+    return decodedAccessToken;
   }
 
   async verifyRefreshToken(refreshToken: string) {
@@ -111,17 +113,21 @@ export class SessionService {
     }
 
     // Раскодируем токен
-    const user = this.jwtService.verify(refreshToken, verifyOptions);
+    const decodedRefreshToken = this.jwtService.verify(refreshToken, verifyOptions);
 
-    if (user.type !== REFRESH_TOKEN_TYPE)
+    if (decodedRefreshToken.type !== REFRESH_TOKEN_TYPE)
       throw new UnauthorizedException('invalid token type');
 
     // Проверим, есть ли refresh token в базе данных
-    const redisKey = SessionService.getRefreshTokenRedisPrefix(user.id, user.session);
+    const redisKey = SessionService.getRefreshTokenRedisPrefix(
+        decodedRefreshToken.user.id,
+        decodedRefreshToken.session
+    );
+
     if (!await this.redis.exists(redisKey))
       throw new UnauthorizedException('session expired');
 
-    return user;
+    return decodedRefreshToken;
   }
 
   async logout(userId, userSession) {

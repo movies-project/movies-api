@@ -5,14 +5,14 @@ import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
  
 import { rabbitmqConfig } from "@app/config";
-import { ProfileModel } from "./profile.model";
+import { Profile } from "./profile.model";
 import { ProfileRegistrationDto } from "./dto/profile-registration.dto";
 
 @Injectable()
 export class ProfileService {
   constructor(
-    @InjectModel(ProfileModel)
-    private readonly profileRepository: Repository<ProfileModel>,
+    @InjectModel(Profile)
+    private readonly profileRepository: Repository<Profile>,
     @Inject(rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS.name)
     private readonly userService: ClientProxy,
   ) {}

@@ -4,11 +4,13 @@ import * as uuid from 'uuid';
 import { JwtService } from "@nestjs/jwt";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
 import Redis from 'ioredis';
+import * as _ from 'lodash';
+ 
 import { jwtConfig } from "@app/config/jwt.config";
 import { redisConfig } from "@app/config/redis.config";
 import { UserService } from "../user/user.service";
-import { UserModel } from "../user/user.model";
-import * as _ from 'lodash';
+import { User } from "../user/user.model";
+
 
 const ms = require('ms');
 
@@ -46,7 +48,7 @@ export class SessionService {
     return this.jwtService.sign(userPayload, options);
   }
 
-  async generateRefreshToken(user: UserModel) {
+  async generateRefreshToken(user: User) {
     const userPayload = {
       id: user.id,
       email: user.email,

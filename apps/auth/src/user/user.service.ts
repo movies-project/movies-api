@@ -4,14 +4,14 @@ import { Repository } from 'sequelize-typescript';
 import { InjectModel } from "@nestjs/sequelize";
  
 import { bcryptConfig } from "@app/config/bcrypt.config";
-import { UserModel } from "./user.model";
+import { User } from "./user.model";
 import {CreateUserDto} from "./dto/create-user.dto";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(UserModel)
-    private readonly userRepository: Repository<UserModel>,
+    @InjectModel(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(userDto: CreateUserDto) {

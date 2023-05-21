@@ -1,7 +1,18 @@
 import { NestFactory } from '@nestjs/core';
-import { MovieModule } from './movie.module';
+import { ValidationPipe } from "@nestjs/common";
+import { SharedModule } from "@app/shared";
+import { swaggerConfig } from "@app/config/swagger.config";
+import { MainModule } from './main.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(MovieModule);
+  const app = await NestFactory.create(MainModule);
+
+  SharedModule.setupSwaggerFromConfig(app, swaggerConfig.docs.MOVIE_API);
+
+  app.enableCors();
+  app.useGlobalPipes(new ValidationPipe());
+
+  await app.listen(3003);
 }
+
 bootstrap();

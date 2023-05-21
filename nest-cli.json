@@ -90,6 +90,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/guards/tsconfig.lib.json"
       }
+    },
+    "location": {
+      "type": "application",
+      "root": "apps/location",
+      "entryFile": "main",
+      "sourceRoot": "apps/location/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/location/tsconfig.app.json"
+      }
     }
   }
 }

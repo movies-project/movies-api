@@ -30,4 +30,8 @@ export class ProfileService {
     const profile = await this.profileRepository.create({...data, userId});
     return profile.id;
   }
+
+  async findByUserId(userId: number) {
+    return await this.profileRepository.findOne({ where: { userId} });
+  }
 }

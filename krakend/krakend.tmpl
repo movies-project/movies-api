@@ -12,6 +12,7 @@
         "endpoint": "{{ $endpoint.endpoint }}",
         "output_encoding": "no-op",
         "method": "{{ $endpoint.method }}",
+        "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",

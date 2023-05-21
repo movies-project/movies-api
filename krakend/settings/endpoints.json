@@ -53,6 +53,66 @@
             "backend": "/profile",
             "host": "http://profile:3002",
             "method": "POST"
+        },
+        {
+            "endpoint": "/movie/{id}",
+            "backend": "/movie/{id}",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/movie/random",
+            "backend": "/movie/random",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/movie",
+            "backend": "/movie",
+            "host": "http://movie:3003",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/movie",
+            "backend": "/movie",
+            "host": "http://movie:3003",
+            "method": "PUT"
+        },
+        {
+            "endpoint": "/movie",
+            "backend": "/movie",
+            "host": "http://movie:3003",
+            "method": "DELETE"
+        },
+        {
+            "endpoint": "/review/{id}",
+            "backend": "/review/{id}",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/review/comment/{id}",
+            "backend": "/review/comment/{id}",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/review/movie/{movieId}",
+            "backend": "/review/movie/{movieId}",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/review",
+            "backend": "/review",
+            "host": "http://movie:3003",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/review/comment",
+            "backend": "/review/comment",
+            "host": "http://movie:3003",
+            "method": "POST"
         }
     ]
 }

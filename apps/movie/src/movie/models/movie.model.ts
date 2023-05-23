@@ -7,7 +7,7 @@ import { Distributors } from "../common/distributors";
 import { Names } from "../common/names";
 import { ExternalId } from "../common/external-id";
 
-@Table({ tableName: 'films' })
+@Table({ tableName: 'film' })
 export class Movie extends Model<Movie> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id: number;

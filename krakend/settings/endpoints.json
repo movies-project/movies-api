@@ -49,6 +49,18 @@
             "method": "POST"
         },
         {
+            "endpoint": "/user",
+            "backend": "/user",
+            "host": "http://auth:3001",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/profile",
+            "backend": "/profile",
+            "host": "http://profile:3002",
+            "method": "GET"
+        },
+        {
             "endpoint": "/profile",
             "backend": "/profile",
             "host": "http://profile:3002",

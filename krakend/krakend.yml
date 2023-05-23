@@ -153,6 +153,42 @@
         },
         
         {
+        "endpoint": "/user",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/user",
+            "host": [
+                "http://auth:3001"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/profile",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/profile",
+            "host": [
+                "http://profile:3002"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
         "endpoint": "/profile",
         "output_encoding": "no-op",
         "method": "POST",

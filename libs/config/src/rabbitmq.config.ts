@@ -2,10 +2,10 @@ import { ClientProviderOptions } from "@nestjs/microservices/module/interfaces/c
 import { RmqOptions, Transport } from '@nestjs/microservices';
 import { SharedModule } from "@app/shared";
 
-const HOST = process.env.RABBITMQ_HOST || 'rabbitmq';
-const PORT = process.env.RABBITMQ_PORT || 5672;
-const USER = process.env.RABBITMQ_USER || 'guest';
-const PASSWORD = process.env.RABBITMQ_PASSWORD || 'guest';
+const HOST = process.env.RABBITMQ_HOST;
+const PORT = process.env.RABBITMQ_PORT;
+const USER = process.env.RABBITMQ_USER;
+const PASSWORD = process.env.RABBITMQ_PASSWORD;
 const URL = `amqp://${USER}:${PASSWORD}@${HOST}:${PORT}`;
 
 const RMQ_OPTIONS = <RmqOptions>{

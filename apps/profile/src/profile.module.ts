@@ -8,7 +8,7 @@ import { Profile } from "./profile.model";
 
 @Module({
   imports: [
-    SequelizeModule.forRoot(postgresConfig.SEQUELIZE_OPTIONS),
+    SequelizeModule.forRoot(postgresConfig.PROFILE_DB_OPTIONS),
     SequelizeModule.forFeature([Profile]),
     ClientsModule.register([rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS]),
   ],

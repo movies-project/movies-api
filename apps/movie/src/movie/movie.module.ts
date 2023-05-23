@@ -7,7 +7,6 @@ import { MovieService } from "./movie.service";
 
 @Module({
   imports: [
-    SequelizeModule.forRoot(postgresConfig.SEQUELIZE_OPTIONS),
     SequelizeModule.forFeature([Movie])
   ],
   controllers: [MovieController],

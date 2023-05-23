@@ -9,7 +9,6 @@ import { ClientsModule } from "@nestjs/microservices";
 
 @Module({
   imports: [
-    SequelizeModule.forRoot(postgresConfig.SEQUELIZE_OPTIONS),
     SequelizeModule.forFeature([Review, Comment]),
     ClientsModule.register([
       rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS,

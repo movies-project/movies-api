@@ -8,7 +8,7 @@ import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
-    SequelizeModule.forRoot(postgresConfig.SEQUELIZE_OPTIONS),
+    SequelizeModule.forRoot(postgresConfig.AUTH_DB_OPTIONS),
     RedisModule.forRoot(redisConfig.REDIS_AUTH_OPTIONS),
     UserModule,
     SessionModule

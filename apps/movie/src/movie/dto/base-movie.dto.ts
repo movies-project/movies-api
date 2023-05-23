@@ -24,7 +24,7 @@ export class MovieBaseDto {
     description: 'Название фильма на английском',
     example: 'The Intouchables'
   })
-  name_en: string;
+  nameEn: string;
 
     @ApiProperty({
       description: 'Год выпуска',
@@ -42,7 +42,7 @@ export class MovieBaseDto {
     description: 'Краткое описание фильма',
     example: 'Короткое описание фильма...'
   })
-  short_description: string;
+  shortDescription: string;
 
   @ApiProperty({
     description: 'Рейтинг',
@@ -60,19 +60,19 @@ export class MovieBaseDto {
     description: 'Длительность фильма',
     example: 112
   })
-  movie_length: number;
+  movieLength: number;
 
   @ApiProperty({
     description: 'Возрастной рейтинг',
     example: 16
   })
-  age_rating: number;
+  ageRating: number;
 
   @ApiProperty({
     description: 'Альтернативное название',
     example: 'Intouchables'
   })
-  alternative_name: string;
+  alternativeName: string;
 
   @ApiProperty({
     description: 'Тип фильма',
@@ -84,7 +84,7 @@ export class MovieBaseDto {
     description: 'Тип фильма (числовое значение)',
     example: 1
   })
-  type_number: number;
+  typeNumber: number;
 
   @ApiProperty({
     description: 'Слоган фильма',
@@ -155,7 +155,7 @@ export class MovieBaseDto {
     description: 'Рейтинг MPAA (Система рейтингов Американской киноассоциации)',
     example: 'r'
   })
-  rating_mpaa: string;
+  ratingMpaa: string;
 
   @ApiProperty({
     description: 'Дистрибьюторы',
@@ -192,7 +192,7 @@ export class MovieBaseDto {
       tmdb: '77338'
     }
   })
-  external_id: ExternalId;
+  externalId: ExternalId;
 
   @ApiProperty({
     description: 'Топ 10',

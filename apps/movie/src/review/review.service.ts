@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
 import { Repository } from "sequelize-typescript";
-import { ReviewModel } from "./models/review.model";
-import { CommentModel } from "./models/comment.model";
+import { Review } from "./models/review.model";
+import { Comment } from "./models/comment.model";
 import { ReviewDto } from "./dto/review.dto";
 import { rabbitmqConfig } from "@app/config";
 import { ClientProxy } from "@nestjs/microservices";
@@ -14,10 +14,10 @@ import { CommentDto } from "./dto/comment.dto";
 @Injectable()
 export class ReviewService {
   constructor(
-    @InjectModel(ReviewModel)
-    private readonly reviewRepository: Repository<ReviewModel>,
-    @InjectModel(CommentModel)
-    private readonly commentRepository: Repository<CommentModel>,
+    @InjectModel(Review)
+    private readonly reviewRepository: Repository<Review>,
+    @InjectModel(Comment)
+    private readonly commentRepository: Repository<Comment>,
     @Inject(rabbitmqConfig.RMQ_PROFILE_MODULE_OPTIONS.name)
     private readonly profileService: ClientProxy
   ) {}
@@ -36,7 +36,7 @@ export class ReviewService {
         movieId
       },
       include: [{
-        model: CommentModel,
+        model: Comment,
         as: 'comments'
       }],
       limit,

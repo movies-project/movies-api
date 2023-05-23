@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/
 import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { MovieService } from './movie.service';
 import { CreateMovieDto } from "./dto/create-movie.dto";
-import { MovieModel } from "./models/movie.model";
+import { Movie } from "./models/movie.model";
 import { UpdateMovieDto } from "./dto/update-movie.dto";
 
 @ApiTags('Фильмы')
@@ -13,14 +13,14 @@ export class MovieController {
   @Get(':id')
   @ApiOperation({ summary: 'Поиск по id' })
   @ApiResponse({ description: 'Фильм найден' })
-  async findOne(@Param('id') id: number): Promise<MovieModel> {
+  async findOne(@Param('id') id: number): Promise<Movie> {
     return await this.movieService.findOne(id);
   }
 
   @Get('random')
   @ApiOperation({ summary: 'Получить случайный фильм из БД'})
   @ApiResponse({ description: 'Случайный фильм найден' })
-  async findRandom(@Query('limit') limit: number): Promise<MovieModel[]> {
+  async findRandom(@Query('limit') limit: number): Promise<Movie[]> {
     return await this.movieService.findRandom(limit);
   }
 

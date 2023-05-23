@@ -1,10 +1,10 @@
 import { Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
-import { MovieModel } from "../../movie/models/movie.model";
+import { Movie } from "../../movie/models/movie.model";
 import { ReviewType } from "../common/review-type";
-import { CommentModel } from "./comment.model";
+import { Comment } from "./comment.model";
 
 @Table({ tableName: 'review' })
-export class ReviewModel extends Model<ReviewModel> {
+export class Review extends Model<Review> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id: number;
 
@@ -32,10 +32,10 @@ export class ReviewModel extends Model<ReviewModel> {
   @Column({ type: DataType.BIGINT, allowNull: true })
   userId: number;
 
-  @ForeignKey(() => MovieModel)
+  @ForeignKey(() => Movie)
   @Column({ field: 'fk_film_id', type: DataType.INTEGER, allowNull: false })
   movieId: number;
 
-  @HasMany(() => CommentModel, 'fk_review_id')
-  comments: CommentModel[];
+  @HasMany(() => Comment, 'fk_review_id')
+  comments: Comment[];
 }

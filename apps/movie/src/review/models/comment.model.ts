@@ -1,8 +1,8 @@
 import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
-import { ReviewModel } from "./review.model";
+import { Review } from "./review.model";
 
 @Table({ tableName: 'comment' })
-export class CommentModel extends Model<CommentModel> {
+export class Comment extends Model<Comment> {
   @Column({ type: DataType.BIGINT, primaryKey: true, autoIncrement: true })
   id: number;
 
@@ -18,14 +18,14 @@ export class CommentModel extends Model<CommentModel> {
   @Column({ field: 'user_id', type: DataType.BIGINT, allowNull: true })
   userId: number;
 
-  @ForeignKey(() => CommentModel)
+  @ForeignKey(() => Comment)
   @Column({ field: 'fk_parent_id', type: DataType.BIGINT, allowNull: true })
   parentId: number; // parent comment
 
-  @ForeignKey(() => ReviewModel)
+  @ForeignKey(() => Review)
   @Column({ field: 'fk_review_id', type: DataType.INTEGER, allowNull: false })
   reviewId: number;
 
-  @BelongsTo(() => ReviewModel)
-  review: ReviewModel;
+  @BelongsTo(() => Review)
+  review: Review;
 }

@@ -7,8 +7,8 @@ import { Distributors } from "../common/distributors";
 import { Names } from "../common/names";
 import { ExternalId } from "../common/external-id";
 
-@Table({ tableName: 'movie' })
-export class MovieModel extends Model<MovieModel> {
+@Table({ tableName: 'films' })
+export class Movie extends Model<Movie> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id: number;
 
@@ -18,8 +18,8 @@ export class MovieModel extends Model<MovieModel> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
 
-  @Column({ type: DataType.STRING, allowNull: false })
-  name_en: string;
+  @Column({ field: 'name_en', type: DataType.STRING, allowNull: false })
+  nameEn: string;
 
   @Column({ type: DataType.INTEGER, allowNull: true })
   year: number;
@@ -27,26 +27,26 @@ export class MovieModel extends Model<MovieModel> {
   @Column({ type: DataType.TEXT, allowNull: true })
   description: string;
 
-  @Column({ type: DataType.TEXT, allowNull: true })
-  short_description: string;
+  @Column({ field: 'short_description', type: DataType.TEXT, allowNull: true })
+  shortDescription: string;
 
   @Column({ type: DataType.JSONB, allowNull: true })
   rating: Rating;
 
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  movie_length: number;
+  @Column({ field: 'movie_length', type: DataType.INTEGER, allowNull: true })
+  movieLength: number;
 
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  age_rating: number;
+  @Column({ field: 'age_rating', type: DataType.INTEGER, allowNull: true })
+  ageRating: number;
 
-  @Column({ type: DataType.STRING, allowNull: true })
-  alternative_name: string;
+  @Column({ field: 'alternative_name', type: DataType.STRING, allowNull: true })
+  alternativeName: string;
 
   @Column({ type: DataType.STRING, allowNull: true })
   type: string;
 
-  @Column({ type: DataType.INTEGER, allowNull: true })
-  type_number: number;
+  @Column({ field: 'type_number', type: DataType.INTEGER, allowNull: true })
+  typeNumber: number;
 
   @Column({ type: DataType.STRING, allowNull: true })
   slogan: string;
@@ -66,8 +66,8 @@ export class MovieModel extends Model<MovieModel> {
   @Column({ type: DataType.STRING, allowNull: true })
   status: string;
 
-  @Column({ type: DataType.STRING, allowNull: true })
-  rating_mpaa: string;
+  @Column({ field: 'rating_mpaa', type: DataType.STRING, allowNull: true })
+  ratingMpaa: string;
 
   @Column({ type: DataType.JSON, allowNull: true })
   distributors: Distributors;
@@ -75,8 +75,8 @@ export class MovieModel extends Model<MovieModel> {
   @Column({ type: DataType.JSONB, allowNull: true })
   names: Names;
 
-  @Column({ type: DataType.JSON, allowNull: true })
-  external_id: ExternalId;
+  @Column({ field: 'external_id', type: DataType.JSON, allowNull: true })
+  externalId: ExternalId;
 
   @Column({ type: DataType.INTEGER, allowNull: true })
   top10: number;

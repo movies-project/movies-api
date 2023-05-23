@@ -1,8 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ReviewService } from "./review.service";
-import { ReviewModel } from "./models/review.model";
-import { CommentModel } from "./models/comment.model";
+import { Review } from "./models/review.model";
+import { Comment } from "./models/comment.model";
 import { ReviewDto } from "./dto/review.dto";
 import { JwtAuthGuard } from "@app/guards/jwt.guard";
 import { UpdateMovieDto } from "../movie/dto/update-movie.dto";
@@ -20,14 +20,14 @@ export class ReviewController {
   @Get(':id')
   @ApiOperation({ summary: 'Поиск обзора по id' })
   @ApiResponse({ description: 'Обзор найден' })
-  async findReview(@Param('id') id: number): Promise<ReviewModel> {
+  async findReview(@Param('id') id: number): Promise<Review> {
     return await this.reviewService.findReview(id);
   }
 
   @Get('comment/:id')
   @ApiOperation({ summary: 'Поиск комментария на обзор по id' })
   @ApiResponse({ description: 'Комментарий найден' })
-  async findComment(@Param('id') id: number): Promise<CommentModel> {
+  async findComment(@Param('id') id: number): Promise<Comment> {
     return await this.reviewService.findComment(id);
   }
 
@@ -58,7 +58,7 @@ export class ReviewController {
   @ApiOperation({ summary: 'Создание обзора' })
   @ApiCreatedResponse({ description: 'Обзор создан' })
   @ApiBearerAuth()
-  async createReview(@Body() data: ReviewDto, @Request() req): Promise<ReviewModel> {
+  async createReview(@Body() data: ReviewDto, @Request() req): Promise<Review> {
     return await this.reviewService.createReview(data, req.userId);
   }
 
@@ -67,7 +67,7 @@ export class ReviewController {
   @ApiOperation({ summary: 'Создание комментария на обзор' })
   @ApiCreatedResponse({ description: 'Комментарий создан' })
   @ApiBearerAuth()
-  async createComment(@Body() data: CommentDto, @Request() req): Promise<CommentModel> {
+  async createComment(@Body() data: CommentDto, @Request() req): Promise<Comment> {
     return await this.reviewService.createComment(data, req.userId);
   }
 

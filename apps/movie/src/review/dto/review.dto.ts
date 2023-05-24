@@ -6,23 +6,23 @@ export class ReviewDto {
     description: 'Заголовок',
     example: 'КОМЕДИЯ ИЛИ ВСЕ ЖЕ ТРАГЕДИЯ?'
   })
-  title: string;
+  readonly title: string;
 
   @ApiProperty({
     description: 'Тип обзора',
     enum: ReviewType
   })
-  type: ReviewType;
+  readonly type: ReviewType;
 
   @ApiProperty({
     description: 'Обзор',
     example: 'Я никогда не писала рецензии на фильмы, но думаю, что фильм 1+1 будет идеальным началом...'
   })
-  review: string;
+  readonly review: string;
 
   @ApiProperty({
     description: 'ID Фильма',
     example: 0
   })
-  movieId: number
+  readonly movieId: number
 }

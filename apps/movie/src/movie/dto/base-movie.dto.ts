@@ -12,37 +12,37 @@ export class MovieBaseDto {
     description: 'ID кинопоиска',
     example: 535341
   })
-  idkp: number;
+  readonly idkp: number;
 
   @ApiProperty({
     description: 'Название фильма',
     example: '1+1'
   })
-  name: string;
+  readonly name: string;
 
   @ApiProperty({
     description: 'Название фильма на английском',
     example: 'The Intouchables'
   })
-  nameEn: string;
+  readonly nameEn: string;
 
-    @ApiProperty({
-      description: 'Год выпуска',
-      example: 2011
-    })
-  year: number;
+  @ApiProperty({
+    description: 'Год выпуска',
+    example: 2011
+  })
+  readonly year: number;
 
   @ApiProperty({
     description: 'Описание фильма',
     example: 'Длинное описание фильма...'
   })
-  description: string;
+  readonly description: string;
 
   @ApiProperty({
     description: 'Краткое описание фильма',
     example: 'Короткое описание фильма...'
   })
-  shortDescription: string;
+  readonly shortDescription: string;
 
   @ApiProperty({
     description: 'Рейтинг',
@@ -54,43 +54,43 @@ export class MovieBaseDto {
       await: 0
     }
   })
-  rating: Rating;
+  readonly rating: Rating;
 
   @ApiProperty({
     description: 'Длительность фильма',
     example: 112
   })
-  movieLength: number;
+  readonly movieLength: number;
 
   @ApiProperty({
     description: 'Возрастной рейтинг',
     example: 16
   })
-  ageRating: number;
+  readonly ageRating: number;
 
   @ApiProperty({
     description: 'Альтернативное название',
     example: 'Intouchables'
   })
-  alternativeName: string;
+  readonly alternativeName: string;
 
   @ApiProperty({
     description: 'Тип фильма',
     example: 'movie'
   })
-  type: string;
+  readonly type: string;
 
   @ApiProperty({
     description: 'Тип фильма (числовое значение)',
     example: 1
   })
-  typeNumber: number;
+  readonly typeNumber: number;
 
   @ApiProperty({
     description: 'Слоган фильма',
     example: 'Sometimes you have to reach into someone else\'s world to find out what\'s missing in your own'
   })
-  slogan: string;
+  readonly slogan: string;
 
   @ApiProperty({
     description: 'Сборы',
@@ -109,7 +109,7 @@ export class MovieBaseDto {
       }
     }
   })
-  fees: Fees;
+  readonly fees: Fees;
 
   @ApiProperty({
     description: 'Премьера',
@@ -122,7 +122,7 @@ export class MovieBaseDto {
       bluray: new Date("2012-06-25T00:00:00.000Z")
     }
   })
-  premiere: Premiere;
+  readonly premiere: Premiere;
 
   @ApiProperty({
     description: 'Количество проголосовавших',
@@ -134,7 +134,7 @@ export class MovieBaseDto {
       await: 15
     }
   })
-  votes: Votes;
+  readonly votes: Votes;
 
   @ApiProperty({
     description: 'Бюджет фильма',
@@ -143,19 +143,19 @@ export class MovieBaseDto {
       currency: '$'
     },
   })
-  budget: Fee;
+  readonly budget: Fee;
 
   @ApiProperty({
     description: 'Статус фильма',
     example: null
   })
-  status: string;
+  readonly status: string;
 
   @ApiProperty({
     description: 'Рейтинг MPAA (Система рейтингов Американской киноассоциации)',
     example: 'r'
   })
-  ratingMpaa: string;
+  readonly ratingMpaa: string;
 
   @ApiProperty({
     description: 'Дистрибьюторы',
@@ -164,7 +164,7 @@ export class MovieBaseDto {
       distributorRelease: 'Новый Диск'
     }
   })
-  distributors: Distributors;
+  readonly distributors: Distributors;
 
   @ApiProperty({
     description: 'Названия',
@@ -182,7 +182,7 @@ export class MovieBaseDto {
       }
     ]
   })
-  names: Names;
+  readonly names: Names;
 
   @ApiProperty({
     description: 'Внешний ID',
@@ -192,17 +192,17 @@ export class MovieBaseDto {
       tmdb: '77338'
     }
   })
-  externalId: ExternalId;
+  readonly externalId: ExternalId;
 
   @ApiProperty({
     description: 'Топ 10',
     example: null
   })
-  top10: number;
+  readonly top10: number;
 
   @ApiProperty({
     description: 'Топ 250',
     example: 16
   })
-  top250: number;
+  readonly top250: number;
 }

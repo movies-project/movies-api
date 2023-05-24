@@ -5,9 +5,9 @@ import { MovieBaseDto } from "./base-movie.dto";
 export class CreateMovieDto extends PartialType(MovieBaseDto) {
   @ApiProperty({ required: true })
   @IsNotEmpty()
-  name: string;
+  readonly name: string;
 
   @ApiProperty({ required: true })
   @IsNotEmpty()
-  name_en: string;
+  readonly nameEn: string;
 }

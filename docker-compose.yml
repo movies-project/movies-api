@@ -1,15 +1,20 @@
-version: '3'
+version: '3.9'
 services:
+
   api:
-    container_name: api
-    build: .
+    container_name: api_movie
+    build:
+      context: .    # весь текущий каталог отправить в образ докер
+      dockerfile: ./Dockerfile
     restart: always
     env_file:
       - .env
     command: npm run start:dev api --prefix /usr/src/server
+    networks:
+      - network_movie
 
   auth:
-    container_name: auth
+    container_name: auth_movie
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
@@ -17,9 +22,11 @@ services:
     env_file:
       - .env
     command: npm run start:dev auth --prefix /usr/src/server
+    networks:
+      - network_movie
 
   media:
-    container_name: media
+    container_name: media_movie
     build:
       context: .
       dockerfile: ./apps/media/Dockerfile
@@ -27,19 +34,25 @@ services:
     env_file:
       - .env
     command: npm run start:dev media --prefix /usr/src/server
+    networks:
+      - network_movie
 
   movie:
-    container_name: movie
+    container_name: movie_movie
     build:
       context: .
       dockerfile: ./apps/movie/Dockerfile
     restart: always
+    ports:
+      - '3003:3003'
     env_file:
       - .env
     command: npm run start:dev movie --prefix /usr/src/server
+    networks:
+      - network_movie
 
   person:
-    container_name: person
+    container_name: person_movie
     build:
       context: .
       dockerfile: ./apps/person/Dockerfile
@@ -47,9 +60,11 @@ services:
     env_file:
       - .env
     command: npm run start:dev person --prefix /usr/src/server
+    networks:
+      - network_movie
 
   profile:
-    container_name: profile
+    container_name: profile_movie
     build:
       context: .
       dockerfile: ./apps/profile/Dockerfile
@@ -59,9 +74,11 @@ services:
     env_file:
       - .env
     command: npm run start:dev profile --prefix /usr/src/server
+    networks:
+      - network_movie
 
   postgres:
-    container_name: postgres
+    container_name: postgres_movie
     image: postgres:15.2
     restart: always
     ports:
@@ -73,9 +90,11 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./scripts/init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+    networks:
+      - network_movie
 
   rabbitmq:
-    container_name: rabbitmq
+    container_name: rabbitmq_movie
     image: rabbitmq:3.11-management
     environment:
       - RABBITMQ_DEFAULT_USER=guest
@@ -85,18 +104,22 @@ services:
       - "15672:15672"
     volumes:
       - rabbit_data:/var/lib/rabbitmq
+    networks:
+      - network_movie
 
   redis:
-    container_name: redis
+    container_name: redis_movie
     image: redis:7.2-rc1
     command: redis-server --requirepass redis
     ports:
       - '6379:6379'
     volumes:
       - redis_data:/var/lib/redis
+    networks:
+      - network_movie
 
   krakend:
-    container_name: krakend
+    container_name: krakend_movie
     image: devopsfaith/krakend:2
     ports:
       - '80:80'
@@ -109,8 +132,14 @@ services:
     volumes:
       - ./krakend:/etc/krakend
     command: /bin/sh -c "krakend run -c /etc/krakend/krakend.tmpl"
+    networks:
+      - network_movie
 
 volumes:
   pg_data:
   rabbit_data:
   redis_data:
+
+networks:
+  network_movie:
+    name: network_movie

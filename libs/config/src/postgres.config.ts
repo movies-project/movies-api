@@ -1,5 +1,6 @@
 import {SequelizeModuleOptions} from "@nestjs/sequelize/dist/interfaces/sequelize-options.interface";
 
+
 const POSTGRES_BASE_OPTIONS = <SequelizeModuleOptions>{
     dialect: 'postgres',
     host: process.env.POSTGRES_HOST,

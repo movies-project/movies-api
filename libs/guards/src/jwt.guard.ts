@@ -4,8 +4,10 @@ import { firstValueFrom } from "rxjs";
 import { rabbitmqConfig } from "@app/config";
 
 export function JwtAuthGuard(role?: string) {
+
   @Injectable()
   class JwtAuthGuardMixin implements CanActivate {
+
     constructor(
       @Inject(rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS.name)
       public readonly authApp: ClientProxy,

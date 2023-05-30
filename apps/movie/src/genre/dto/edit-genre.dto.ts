@@ -1,4 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
+import {IsNotEmpty} from "class-validator";
 
 export class EditGenreDto {     // какие поля нужны для редактирования Genre
 
@@ -6,6 +7,7 @@ export class EditGenreDto {     // какие поля нужны для ред�
         example: 'фантастика',
         description: 'Уникальное название жанра'
     })
+    @IsNotEmpty()
     readonly name: string;
 
 
@@ -13,5 +15,6 @@ export class EditGenreDto {     // какие поля нужны для ред�
         example: 'fantastic',
         description: 'Уникальное название жанра на английском языке'
     })
+    @IsNotEmpty()
     readonly name_en: string;
 }

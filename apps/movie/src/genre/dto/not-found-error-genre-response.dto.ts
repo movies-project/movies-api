@@ -9,8 +9,14 @@ export class NotFoundErrorGenreResponseDto {
 
 
     @ApiProperty({      // документирование swagger, Response Schema
-        example: 'Жанр не найден или поля для обновления не переданы',
+        example: 'Жанр с указанным id не найден',
     })
     readonly message: string;
+
+
+    @ApiProperty({      // документирование swagger, Response Schema
+        example: 'Not Found',
+    })
+    readonly error: string;
 
 }

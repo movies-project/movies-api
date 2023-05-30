@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable, NotFoundException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 
 import {EditGenreDto} from './dto/edit-genre.dto';
@@ -24,33 +24,16 @@ export class GenreService {
 
 
     // редактировать жанры в бд
-    async edit(genreId: number, genreDto: EditGenreDto) {
-        try {
-            const genre = await this.genreRepository.update(genreDto, {
-                where: {id: genreId},
-                returning: ['id', 'name', 'name_en'],          // вернуть поля
-            })
-            if (genre[0] === 0) {      // если ни одно поле не обновилось
-                // передает в catch ошибку 404
-                throw new NotFoundException();
-            }
-            return genre[1][0];
-        } catch (e) {
-            if ('status' in e && e.status == 404) {
-                throw new HttpException(
-                    'Жанр не найден ' +
-                    'или поля для обновления не переданы',
-                    HttpStatus.NOT_FOUND
-                )
-            }
-            // если передаваемое значение поля не уникально
-            if (e.name == 'SequelizeUniqueConstraintError') {
-                throw new HttpException(
-                    `${e.original.detail}`,
-                    HttpStatus.BAD_REQUEST
-                )
-            }
+    async update(genreId: number, genreDto: EditGenreDto): Promise<Genre> | undefined {
+        const [, [updatedGenre]] = await this.genreRepository.update(genreDto, {
+            where: {id: genreId},
+            returning: true,          // вернуть все поля
+        })
+        if (updatedGenre) {
+            // удаляем поле updatedAt
+            delete updatedGenre['dataValues']['updatedAt']
         }
 
+        return updatedGenre;
     }
 }

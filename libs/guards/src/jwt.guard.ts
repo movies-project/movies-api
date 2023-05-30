@@ -3,6 +3,8 @@ import { ClientProxy } from "@nestjs/microservices";
 import { firstValueFrom } from "rxjs";
 import { rabbitmqConfig } from "@app/config";
 
+export const ADMIN_ROLE = 'admin'
+
 export function JwtAuthGuard(role?: string) {
 
   @Injectable()

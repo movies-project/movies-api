@@ -195,5 +195,22 @@
         }]
         },
         
+        {
+        "endpoint": "/countries",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/countries",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
     ]
 }

@@ -39,7 +39,8 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
 
     @ApiProperty({      // документирование swagger, Response Schema
         example: 'fantastic',
-        description: 'Уникальное название жанра на английском языке'
+        description: 'Уникальное название жанра на английском языке',
+        nullable: true      // может быть пустым
     })
     @Column({
         type: DataType.STRING,

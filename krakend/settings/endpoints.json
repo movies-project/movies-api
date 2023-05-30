@@ -53,6 +53,18 @@
             "backend": "/profile",
             "host": "http://profile:3002",
             "method": "POST"
+        },
+        {
+            "endpoint": "/genres",
+            "backend": "/genres",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/genres/{id}",
+            "backend": "/genres/{id}",
+            "host": "http://movie:3003",
+            "method": "PUT"
         }
     ]
 }

@@ -32,7 +32,7 @@ export class GenreController {
     @ApiOkResponse({            // 200
         type: [Genre]
     })
-    getAll() {
+    async getAll(): Promise<Genre[]> {
         return this.genreService.getAll();            // возвращает результат из сервиса
     }
 

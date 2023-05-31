@@ -18,7 +18,7 @@ export class CountryController {
     @ApiOkResponse({            // 200
         type: [Country]
     })
-    getAll() {
+    async getAll(): Promise<Country[]> {
         return this.countryService.getAll();        // возвращает результат из сервиса
     }
 

@@ -1,4 +1,4 @@
-import {BadRequestException, Body, Controller, Get, NotFoundException, Param, Put, UseGuards} from '@nestjs/common';
+import {BadRequestException, Body, Controller, Get, NotFoundException, Param, Put} from '@nestjs/common';
 import {
     ApiBadRequestResponse,
     ApiBearerAuth,
@@ -13,10 +13,10 @@ import {
 import {GenreService} from "./genre.service";
 import {Genre} from "./genre.model";
 import {EditGenreDto} from './dto/edit-genre.dto';
-import {ADMIN_ROLE, JwtAuthGuard} from "@app/guards/jwt.guard";
 import {NotFoundErrorGenreResponseDto} from "./dto/not-found-error-genre-response.dto";
 import {BadRequestErrorGenreResponseDto} from "./dto/bad-request-error-genre-response.dto";
 import {ForbiddenErrorResponseDto} from "@app/shared/dto/forbidden-error-response.dto";
+import { ADMIN_ROLE, JwtAuthGuard } from "@app/auth-shared/session/guards/jwt.guard";
 
 // endpoints /genres/
 
@@ -62,7 +62,7 @@ export class GenreController {
         description: 'Идентификатор жанра'
     })
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard(ADMIN_ROLE))
+    @JwtAuthGuard(ADMIN_ROLE)
     async update(@Param('id') genreId: number,        // @Param - считываем параметр id
                  @Body() genreDto: EditGenreDto): Promise<Genre> {          // тело запроса получает по схеме EditGenreDto
         let genre: Genre;

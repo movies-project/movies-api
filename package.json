@@ -93,7 +93,12 @@
     "moduleNameMapper": {
       "^@app/shared(|/.*)$": "<rootDir>/libs/shared/src/$1",
       "^@app/config(|/.*)$": "<rootDir>/libs/config/src/$1",
-      "^@app/guards(|/.*)$": "<rootDir>/libs/guards/src/$1"
+      "^@app/guards(|/.*)$": "<rootDir>/libs/guards/src/$1",
+      "^@app/pipes(|/.*)$": "<rootDir>/libs/pipes/src/$1",
+      "^@app/interfaces(|/.*)$": "<rootDir>/libs/interfaces/src/$1",
+      "^@app/auth-shared(|/.*)$": "<rootDir>/libs/auth-shared/src/$1",
+      "^@app/microservices(|/.*)$": "<rootDir>/libs/microservices/src/$1",
+      "^@app/profile-shared(|/.*)$": "<rootDir>/libs/profile-shared/src/$1"
     }
   }
 }

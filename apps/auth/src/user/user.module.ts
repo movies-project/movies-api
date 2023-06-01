@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
+import { ClientsModule } from "@nestjs/microservices";
 import { JwtModule } from '@nestjs/jwt';
 import { SequelizeModule } from "@nestjs/sequelize";
- 
-import { User } from './user.model';
+
+import { rabbitmqConfig } from "@app/config";
+import { User } from "@app/auth-shared/user/models/user.model";
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { ClientsModule } from "@nestjs/microservices";
-import { rabbitmqConfig } from "@app/config";
+import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
+import { UserMessageController } from "./user-message.controller";
 
 @Module({
   imports: [
-    JwtModule.register({}),
     SequelizeModule.forFeature([User]),
-    ClientsModule.register([rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS])
+    AuthSharedModule
   ],
-  controllers: [UserController],
+  controllers: [UserController, UserMessageController],
   providers: [UserService],
   exports: [UserService, SequelizeModule]
 })

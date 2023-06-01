@@ -1,7 +1,15 @@
-import { ExecutionContext, Inject, Injectable, UnauthorizedException } from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
-import { rabbitmqConfig } from "@app/config";
-import { JwtAuthGuard } from "@app/guards/jwt.guard";
+import {
+  applyDecorators,
+  Injectable,
+  UseGuards,
+  ExecutionContext,
+  ForbiddenException,
+  NotFoundException
+} from "@nestjs/common";
+import { ApiForbiddenResponse, ApiNotFoundResponse, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { JwtAuthGuardMixin } from "@app/auth-shared/session/guards/jwt.guard";
+import { AuthenticatedRequest } from "@app/auth-shared/session/interfaces/authenticated-request.interface";
+import { SessionSharedService } from "@app/auth-shared/session/session-shared.service";
 import { ReviewService } from "../review.service";
 
 export enum ResourceType {
@@ -11,41 +19,45 @@ export enum ResourceType {
 
 export function ReviewOwnerGuard(resourceType: ResourceType) {
   @Injectable()
-  class ReviewOwnerGuardMixin extends JwtAuthGuard() {
+  class ReviewOwnerGuardMixin extends JwtAuthGuardMixin {
     constructor(
-      public readonly reviewService: ReviewService,
-      @Inject(rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS.name)
-      public readonly authService: ClientProxy
+      public readonly sessionSharedService: SessionSharedService,
+      public readonly reviewService: ReviewService
     ) {
-      super(authService);
+      super(sessionSharedService);
     }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
       if (!await super.canActivate(context))
         return false;
 
-      const request = context.switchToHttp().getRequest();
-      const userId = request.user.id;
+      const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
 
       if (resourceType === ResourceType.Review) {
         const review = await this.reviewService.findReview(request.body.reviewId);
         if (!review) {
-          throw new UnauthorizedException('review not found');
+          throw new NotFoundException('Обзор не найден');
         }
-        if (review.userId == userId) {
-          throw new UnauthorizedException('user is not the owner of the review');
+        if (review.userId == request.accessTokenData.user.id) {
+          throw new ForbiddenException('Доступ к обзору запрещен');
         }
       } else if (resourceType === ResourceType.Comment) {
-        const comment = await this.reviewService.findComment(request.body.commentId);
+        const comment = await this.reviewService.findComment(request.body.reviewId, request.body.commentId);
         if (!comment) {
-          throw new UnauthorizedException('comment not found');
+          throw new NotFoundException('Комментарий не найден');
         }
-        if (comment.userId !== userId) {
-          throw new UnauthorizedException('user is not the owner of the comment');
+        if (comment.userId !== request.accessTokenData.user.id) {
+          throw new ForbiddenException('Доступ к комментарию запрещен');
         }
       }
     }
   }
 
-  return ReviewOwnerGuardMixin;
+  // Добавляем ошибки 401, 403, 404 для документации Swagger
+  return applyDecorators(
+    UseGuards(ReviewOwnerGuardMixin),
+    ApiUnauthorizedResponse( { description: 'Невалидный токен доступа' }),
+    ApiNotFoundResponse({ description: 'Обзор/комментарий не найден' }),
+    ApiForbiddenResponse({ description: 'Доступ к обзору/комментарию запрещен' })
+  );
 }

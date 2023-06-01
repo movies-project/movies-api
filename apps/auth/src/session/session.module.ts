@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { SessionController } from "./session.controller";
-import { ClientsModule } from "@nestjs/microservices";
-import { rabbitmqConfig } from "@app/config";
+
 import { SessionService } from "./session.service";
+import { SessionController } from "./session.controller";
 import { UserService } from "../user/user.service";
 import { UserModule } from "../user/user.module";
+import { SessionMessageController } from "./session-message.controller";
+import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
 
 @Module({
   imports: [
     JwtModule.register({}),
-    ClientsModule.register([rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS]),
+    AuthSharedModule,
     UserModule
   ],
-  controllers: [SessionController],
+  controllers: [SessionController, SessionMessageController],
   providers: [SessionService, UserService],
   exports: [SessionService]
 })

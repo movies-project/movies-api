@@ -15,7 +15,17 @@ const REDIS_AUTH_OPTIONS = <RedisModuleOptions>{
     },
 }
 
+const MOVIE_REDIS_NAMESPACE = 'movie';
+const REDIS_MOVIE_OPTIONS = <RedisModuleOptions>{
+  config: <RedisClientOptions>{
+    namespace: MOVIE_REDIS_NAMESPACE,
+    ...DEFAULT_REDIS_OPTIONS
+  },
+}
+
 export const redisConfig = {
   AUTH_REDIS_NAMESPACE,
-  REDIS_AUTH_OPTIONS
+  REDIS_AUTH_OPTIONS,
+  MOVIE_REDIS_NAMESPACE,
+  REDIS_MOVIE_OPTIONS
 }

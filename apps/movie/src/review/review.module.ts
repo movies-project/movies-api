@@ -1,19 +1,17 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from "@nestjs/sequelize";
-import { postgresConfig, rabbitmqConfig } from "@app/config";
 import { Review } from "./models/review.model";
 import { Comment } from "./models/comment.model";
 import { ReviewController } from "./review.controller";
 import { ReviewService } from "./review.service";
-import { ClientsModule } from "@nestjs/microservices";
+import { ProfileSharedModule } from "@app/profile-shared/profile-shared.module";
+import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Review, Comment]),
-    ClientsModule.register([
-      rabbitmqConfig.RMQ_AUTH_MODULE_OPTIONS,
-      rabbitmqConfig.RMQ_PROFILE_MODULE_OPTIONS
-    ])
+    ProfileSharedModule,
+    AuthSharedModule
   ],
   controllers: [ReviewController],
   providers: [ReviewService],

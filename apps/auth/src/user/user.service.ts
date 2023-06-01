@@ -1,11 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'sequelize-typescript';
 import { InjectModel } from "@nestjs/sequelize";
  
 import { bcryptConfig } from "@app/config/bcrypt.config";
-import { User } from "./user.model";
-import {CreateUserDto} from "./dto/create-user.dto";
+import { User } from "@app/auth-shared/user/models/user.model";
 
 @Injectable()
 export class UserService {
@@ -14,32 +13,26 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(userDto: CreateUserDto) {
+  async create(email: string, password: string): Promise<User> {
     const saltRounds = bcryptConfig.AUTH_SALT_ROUNDS;
-    const passwordHash = await bcrypt.hash(userDto.password, saltRounds);
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
     // возвращаем user
     return this.userRepository.create({
-      email: userDto.email,
+      email: email,
       passwordHash
     });
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({
+  async findOne(id: number): Promise<User> {
+    return this.userRepository.findOne({
       where: {id}
     });
-    if (!user)
-      throw new NotFoundException();
-    return user;
   }
 
   async findByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findOne({
+    return this.userRepository.findOne({
       where: {email}
     });
-    if (!user)
-      throw new NotFoundException();
-    return user;
   }
 }

@@ -1,69 +1,64 @@
 import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
-import * as bcrypt from 'bcrypt';
-import * as uuid from 'uuid';
+import * as uuid from "uuid";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
-import Redis from 'ioredis';
-import * as _ from 'lodash';
- 
+import Redis from "ioredis";
+import * as _ from "lodash";
+
 import { jwtConfig } from "@app/config/jwt.config";
 import { redisConfig } from "@app/config/redis.config";
-import { UserService } from "../user/user.service";
-import { User } from "../user/user.model";
-
+import { Token, TokenType, TokenUser } from "@app/auth-shared/session/interfaces/token.interface";
+import { User } from "@app/auth-shared/user/models/user.model";
+import { TokenPair } from "@app/auth-shared/session/interfaces/token-pair.interface";
 
 const ms = require('ms');
-
-const ACCESS_TOKEN_TYPE = 'access token';
-const REFRESH_TOKEN_TYPE = 'refresh token';
 
 @Injectable()
 export class SessionService {
   constructor(
     private readonly jwtService: JwtService,
     @InjectRedis(redisConfig.AUTH_REDIS_NAMESPACE)
-    private readonly redis: Redis,
-    private readonly userService: UserService
+    private readonly redis: Redis
   ) {}
 
-  private static getRefreshTokenRedisPrefix(userId: string, session: string) {
+  private static getRefreshTokenRedisPrefix(userId: number, session: string): string {
     return `refreshToken:${userId}:${session}`;
   }
 
-  private static getBlacklistRedisPrefix(userId: string) {
+  private static getBlacklistRedisPrefix(userId: number): string {
     return `blackListSession:${userId}`;
   }
 
-  async generateAccessToken(refreshToken: string) {
+  async generateAccessToken(refreshToken: string): Promise<string> {
     // Раскодируем токен
     const decodedRefreshToken = await this.verifyRefreshToken(refreshToken);
 
     const payload = {
       // Сохраняем все данные пользователя из refreshToken, включая сессию
       ...(_.omit(decodedRefreshToken, ['iat', 'exp', 'type'])),
-      type: ACCESS_TOKEN_TYPE
+      type: TokenType.AccessToken
     };
 
     const options = jwtConfig.JWT_ACCESS_TOKEN_SIGN_OPTIONS;
     return this.jwtService.sign(payload, options);
   }
 
-  async generateRefreshToken(user: User) {
-    const payload = {
-      user: {
+  async generateRefreshToken(user: User): Promise<string> {
+    const payload = <Token>{
+      user: <TokenUser>{
         id: user.id,
         email: user.email,
         role: user.role
       },
       session: uuid.v4(), // Храним для возможности блокировки access токенов по сессии
-      type: REFRESH_TOKEN_TYPE
+      type: TokenType.RefreshToken
     };
     const options = jwtConfig.JWT_REFRESH_TOKEN_SIGN_OPTIONS;
     const token = this.jwtService.sign(payload, options);
 
     // Сохраним refresh token в базу данных Redis, чтобы
     // иметь возможность в любой момент его отозвать
-    const redisKey = SessionService.getRefreshTokenRedisPrefix(user.id.toString(), payload.session);
+    const redisKey = SessionService.getRefreshTokenRedisPrefix(user.id, payload.session);
     await this.redis.set(redisKey, '');
 
     // Настроим автоматическое удаление ключа после истечения срока действия токена
@@ -73,18 +68,18 @@ export class SessionService {
     return token;
   }
 
-  async login(email: string, password: string) {
-    const user = await this.userService.findByEmail(email);
-    if (!user)
-      throw new UnauthorizedException();
-    const passwordEquals = await bcrypt.compare(password, user.passwordHash);
-    if (!passwordEquals)
-      throw new UnauthorizedException();
-    return this.generateRefreshToken(user);
+  async login(user: User): Promise<TokenPair> {
+    const refreshToken = await this.generateRefreshToken(user);
+    const accessToken = await this.generateAccessToken(refreshToken);
+
+    return {
+      refreshToken,
+      accessToken
+    };
   }
 
-  async verifyAccessToken(accessToken: string, role: string) {
-    const isSessionBlacklisted = async (userId: string, session: string) => {
+  async verifyAccessToken(accessToken: string, role: string): Promise<Token> {
+    const isSessionBlacklisted = async (userId: number, session: string) => {
       const redisBlacklistKey = SessionService.getBlacklistRedisPrefix(userId);
       const countBlockedSessions = await this.redis.sismember(redisBlacklistKey, session);
       return Boolean(countBlockedSessions);
@@ -95,9 +90,9 @@ export class SessionService {
     }
 
     // Раскодируем токен
-    const decodedAccessToken = this.jwtService.verify(accessToken, verifyOptions);
+    const decodedAccessToken = <Token>this.jwtService.verify(accessToken, verifyOptions);
 
-    if (decodedAccessToken.type !== ACCESS_TOKEN_TYPE)
+    if (decodedAccessToken.type !== TokenType.AccessToken)
       throw new UnauthorizedException('invalid token type');
     if (role && (role !== decodedAccessToken.user.role))
       throw new ForbiddenException();
@@ -107,15 +102,15 @@ export class SessionService {
     return decodedAccessToken;
   }
 
-  async verifyRefreshToken(refreshToken: string) {
+  async verifyRefreshToken(refreshToken: string): Promise<Token> {
     const verifyOptions = {
       secret: jwtConfig.JWT_ACCESS_TOKEN_SIGN_OPTIONS.secret
     }
 
     // Раскодируем токен
-    const decodedRefreshToken = this.jwtService.verify(refreshToken, verifyOptions);
+    const decodedRefreshToken = <Token>this.jwtService.verify(refreshToken, verifyOptions);
 
-    if (decodedRefreshToken.type !== REFRESH_TOKEN_TYPE)
+    if (decodedRefreshToken.type !== TokenType.RefreshToken)
       throw new UnauthorizedException('invalid token type');
 
     // Проверим, есть ли refresh token в базе данных
@@ -130,7 +125,7 @@ export class SessionService {
     return decodedRefreshToken;
   }
 
-  async logout(userId, userSession) {
+  async logout(userId, userSession): Promise<void> {
     // Удалим refresh token из базы данных Redis
     const redisRefreshTokenKey = SessionService.getRefreshTokenRedisPrefix(userId, userSession);
     await this.redis.del(redisRefreshTokenKey);
@@ -144,7 +139,7 @@ export class SessionService {
     await this.redis.expire(redisBlacklistKey, ms(accessTokenExpiresIn));
   }
 
-  async logoutAll(userId) {
+  async logoutAll(userId): Promise<void> {
     // Производим поиск refresh токенов по id пользователя в базе данных Redis
     const redisRefreshTokenMask = SessionService.getRefreshTokenRedisPrefix(userId, '*');
     let cursor = '0';

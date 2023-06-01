@@ -19,5 +19,5 @@ export class CommentDto {
     example: null
   })
   @IsOptional()
-  readonly parentId: number;
+  readonly parentId: string;
 }

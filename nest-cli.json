@@ -99,6 +99,51 @@
       "compilerOptions": {
         "tsConfigPath": "apps/location/tsconfig.app.json"
       }
+    },
+    "pipes": {
+      "type": "library",
+      "root": "libs/pipes",
+      "entryFile": "index",
+      "sourceRoot": "libs/pipes/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/pipes/tsconfig.lib.json"
+      }
+    },
+    "interfaces": {
+      "type": "library",
+      "root": "libs/interfaces",
+      "entryFile": "index",
+      "sourceRoot": "libs/interfaces/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interfaces/tsconfig.lib.json"
+      }
+    },
+    "auth-shared": {
+      "type": "library",
+      "root": "libs/auth-shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth-shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth-shared/tsconfig.lib.json"
+      }
+    },
+    "microservices": {
+      "type": "library",
+      "root": "libs/microservices",
+      "entryFile": "index",
+      "sourceRoot": "libs/microservices/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/microservices/tsconfig.lib.json"
+      }
+    },
+    "profile-shared": {
+      "type": "library",
+      "root": "libs/profile-shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/profile-shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/profile-shared/tsconfig.lib.json"
+      }
     }
   }
 }

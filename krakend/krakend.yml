@@ -99,14 +99,14 @@
         },
         
         {
-        "endpoint": "/session/accessToken",
+        "endpoint": "/session/access-token/update",
         "output_encoding": "no-op",
         "method": "POST",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/session/accessToken",
+            "url_pattern": "/session/access-token/update",
             "host": [
                 "http://auth:3001"
             ],
@@ -153,14 +153,14 @@
         },
         
         {
-        "endpoint": "/user",
+        "endpoint": "/users/self",
         "output_encoding": "no-op",
         "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/user",
+            "url_pattern": "/users/self",
             "host": [
                 "http://auth:3001"
             ],
@@ -171,14 +171,14 @@
         },
         
         {
-        "endpoint": "/profile",
+        "endpoint": "/profiles",
         "output_encoding": "no-op",
-        "method": "GET",
+        "method": "POST",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/profile",
+            "url_pattern": "/profiles",
             "host": [
                 "http://profile:3002"
             ],
@@ -189,14 +189,14 @@
         },
         
         {
-        "endpoint": "/profile",
+        "endpoint": "/profiles/self",
         "output_encoding": "no-op",
-        "method": "POST",
+        "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/profile",
+            "url_pattern": "/profiles/self",
             "host": [
                 "http://profile:3002"
             ],
@@ -207,14 +207,14 @@
         },
         
         {
-        "endpoint": "/movie/{id}",
+        "endpoint": "/movies/{id}",
         "output_encoding": "no-op",
         "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/movie/{id}",
+            "url_pattern": "/movies/{id}",
             "host": [
                 "http://movie:3003"
             ],
@@ -225,14 +225,14 @@
         },
         
         {
-        "endpoint": "/movie/random",
+        "endpoint": "/movies/random",
         "output_encoding": "no-op",
         "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/movie/random",
+            "url_pattern": "/movies/random",
             "host": [
                 "http://movie:3003"
             ],
@@ -243,14 +243,50 @@
         },
         
         {
-        "endpoint": "/movie",
+        "endpoint": "/movies",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/movies",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/movies/best",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/movies/best",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/movies",
         "output_encoding": "no-op",
         "method": "POST",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/movie",
+            "url_pattern": "/movies",
             "host": [
                 "http://movie:3003"
             ],
@@ -261,14 +297,14 @@
         },
         
         {
-        "endpoint": "/movie",
+        "endpoint": "/movies/{id}",
         "output_encoding": "no-op",
         "method": "PUT",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/movie",
+            "url_pattern": "/movies/{id}",
             "host": [
                 "http://movie:3003"
             ],
@@ -279,14 +315,14 @@
         },
         
         {
-        "endpoint": "/movie",
+        "endpoint": "/movies/{id}",
         "output_encoding": "no-op",
         "method": "DELETE",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/movie",
+            "url_pattern": "/movies/{id}",
             "host": [
                 "http://movie:3003"
             ],
@@ -297,14 +333,14 @@
         },
         
         {
-        "endpoint": "/review/{id}",
+        "endpoint": "/reviews/{reviewId}",
         "output_encoding": "no-op",
         "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/review/{id}",
+            "url_pattern": "/reviews/{reviewId}",
             "host": [
                 "http://movie:3003"
             ],
@@ -315,14 +351,14 @@
         },
         
         {
-        "endpoint": "/review/comment/{id}",
+        "endpoint": "/reviews/{reviewId}/comments/{commentId}",
         "output_encoding": "no-op",
         "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/review/comment/{id}",
+            "url_pattern": "/reviews/{reviewId}/comments/{commentId}",
             "host": [
                 "http://movie:3003"
             ],
@@ -333,14 +369,14 @@
         },
         
         {
-        "endpoint": "/review/movie/{movieId}",
+        "endpoint": "/reviews",
         "output_encoding": "no-op",
         "method": "GET",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/review/movie/{movieId}",
+            "url_pattern": "/reviews",
             "host": [
                 "http://movie:3003"
             ],
@@ -351,14 +387,14 @@
         },
         
         {
-        "endpoint": "/review",
+        "endpoint": "/reviews",
         "output_encoding": "no-op",
         "method": "POST",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/review",
+            "url_pattern": "/reviews",
             "host": [
                 "http://movie:3003"
             ],
@@ -369,14 +405,50 @@
         },
         
         {
-        "endpoint": "/review/comment",
+        "endpoint": "/reviews/{reviewId}/comments",
         "output_encoding": "no-op",
         "method": "POST",
         "input_query_strings": ["*"],
         "input_headers": ["Authorization", "Content-Type"],
         "backend": [{
             "encoding": "no-op",
-            "url_pattern": "/review/comment",
+            "url_pattern": "/reviews/{reviewId}/comments",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/reviews/{reviewId}",
+        "output_encoding": "no-op",
+        "method": "DELETE",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/reviews/{reviewId}",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/reviews/{reviewId}/comments/{commentId}",
+        "output_encoding": "no-op",
+        "method": "DELETE",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/reviews/{reviewId}/comments/{commentId}",
             "host": [
                 "http://movie:3003"
             ],

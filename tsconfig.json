@@ -35,6 +35,36 @@
       ],
       "@app/guards/*": [
         "libs/guards/src/*"
+      ],
+      "@app/pipes": [
+        "libs/pipes/src"
+      ],
+      "@app/pipes/*": [
+        "libs/pipes/src/*"
+      ],
+      "@app/interfaces": [
+        "libs/interfaces/src"
+      ],
+      "@app/interfaces/*": [
+        "libs/interfaces/src/*"
+      ],
+      "@app/auth-shared": [
+        "libs/auth-shared/src"
+      ],
+      "@app/auth-shared/*": [
+        "libs/auth-shared/src/*"
+      ],
+      "@app/microservices": [
+        "libs/microservices/src"
+      ],
+      "@app/microservices/*": [
+        "libs/microservices/src/*"
+      ],
+      "@app/profile-shared": [
+        "libs/profile-shared/src"
+      ],
+      "@app/profile-shared/*": [
+        "libs/profile-shared/src/*"
       ]
     }
   }

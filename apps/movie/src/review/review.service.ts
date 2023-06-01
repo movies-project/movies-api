@@ -1,15 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/sequelize";
+import { ClientProxy } from "@nestjs/microservices";
 import { Repository } from "sequelize-typescript";
+import { firstValueFrom } from "rxjs";
+import { rabbitmqConfig } from "@app/config";
+import { ReviewStructureType } from "./common/review-structure-type";
+import { CommentDto } from "./dto/comment.dto";
+import { ReviewDto } from "./dto/review.dto";
 import { Review } from "./models/review.model";
 import { Comment } from "./models/comment.model";
-import { ReviewDto } from "./dto/review.dto";
-import { rabbitmqConfig } from "@app/config";
-import { ClientProxy } from "@nestjs/microservices";
-import { firstValueFrom } from "rxjs";
-import { ReviewStructureType } from "./common/review-structure-type";
-import { QueryTypes } from "sequelize";
-import { CommentDto } from "./dto/comment.dto";
+import { ProfileSharedService } from "@app/profile-shared/profile-shared.service";
 
 @Injectable()
 export class ReviewService {
@@ -18,19 +18,20 @@ export class ReviewService {
     private readonly reviewRepository: Repository<Review>,
     @InjectModel(Comment)
     private readonly commentRepository: Repository<Comment>,
-    @Inject(rabbitmqConfig.RMQ_PROFILE_MODULE_OPTIONS.name)
-    private readonly profileService: ClientProxy
+    private readonly profileSharedService: ProfileSharedService
   ) {}
 
-  async findReview(id: number) {
-    return await this.reviewRepository.findByPk(id);
+  async findReview(reviewId: number): Promise<Review> {
+    return await this.reviewRepository.findByPk(reviewId);
   }
 
-  async findComment(id: number) {
-    return await this.commentRepository.findByPk(id);
+  async findComment(reviewId: string, commentId: number): Promise<Comment> {
+    return await this.commentRepository.findOne({
+      where: { id: commentId, reviewId: reviewId }
+    });
   }
 
-  async getFlatReviews(movieId: number, limit: number, offset: number) {
+  async getFlatReviews(movieId: number, limit: number, offset: number): Promise<Review[]> {
     return await this.reviewRepository.findAll({
       where: {
         movieId
@@ -44,14 +45,14 @@ export class ReviewService {
     });
   }
 
-  async getTreeReviews(movieId: number, limit: number, offset: number, maxDepth: number) {
+  async getTreeReviews(movieId: number, limit: number, offset: number, maxDepth: number): Promise<Review[]> {
     let reviews = await this.getFlatReviews(movieId, limit, offset);
     reviews = reviews.map((value) => value.dataValues);
 
     for (const review of reviews) {
 
-      const commentMap = new Map<number, any>();
-      const depthMap = new Map<number, number>();
+      const commentMap = new Map<string, any>();
+      const depthMap = new Map<string, number>();
 
       for (const comment of review.comments) {
         if (!comment.id)
@@ -88,7 +89,7 @@ export class ReviewService {
     return reviews;
   }
 
-  async getReviews(movieId: number, limit: number, offset: number, view: ReviewStructureType) {
+  async getReviews(movieId: number, limit: number, offset: number, view: ReviewStructureType): Promise<Review[]> {
     switch (view) {
       case ReviewStructureType.Flat:
         return this.getFlatReviews(movieId, limit, offset);
@@ -99,10 +100,8 @@ export class ReviewService {
     }
   }
 
-  async createReview(data: ReviewDto, userId: number) {
-    const profile = await firstValueFrom(
-      this.profileService.send('profile_find_by_user_id', userId)
-    );
+  async createReview(data: ReviewDto, userId: number): Promise<Review> {
+    const profile = await this.profileSharedService.findByUserId(userId);
     return await this.reviewRepository.create({
       date: new Date(),
       author: `${profile.name} ${profile.surname}`,
@@ -111,10 +110,8 @@ export class ReviewService {
     });
   }
 
-  async createComment(data: CommentDto, userId: number) {
-    const profile = await firstValueFrom(
-      this.profileService.send('profile_find_by_user_id', userId)
-    );
+  async createComment(data: CommentDto, userId: number): Promise<Comment> {
+    const profile = await this.profileSharedService.findByUserId(userId);
     return await this.commentRepository.create({
       date: new Date(),
       author: `${profile.name} ${profile.surname}`,
@@ -123,11 +120,15 @@ export class ReviewService {
     });
   }
 
-  async deleteReview(id: number) {
-    return await this.reviewRepository.destroy({ where: { id } });
+  async deleteReview(reviewId: number): Promise<boolean> {
+    return !!await this.reviewRepository.destroy({
+      where: { id: reviewId }
+    });
   }
 
-  async deleteComment(id: number) {
-    return await this.commentRepository.destroy({ where: { id } });
+  async deleteComment(reviewId: string, commentId: number): Promise<boolean> {
+    return !!await this.commentRepository.destroy({
+      where: { id: commentId, reviewId: reviewId }
+    });
   }
 }

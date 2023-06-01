@@ -1,7 +1,3 @@
 export const apiConfig = {
-  PORT: 3000,
-
-  RANDOM_MOVIES_LIMIT: 100,
-  REVIEW_LIST_LIMIT: 100,
-  COMMENT_LIST_LIMIT: 100
+  PORT: 3000
 }

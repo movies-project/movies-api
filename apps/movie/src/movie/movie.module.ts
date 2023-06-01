@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from "@nestjs/sequelize";
-import { postgresConfig } from "@app/config";
 import { Movie } from "./models/movie.model";
 import { MovieController } from "./movie.controller";
 import { MovieService } from "./movie.service";
+import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Movie])
+    SequelizeModule.forFeature([Movie]),
+    AuthSharedModule
   ],
   controllers: [MovieController],
   providers: [MovieService],

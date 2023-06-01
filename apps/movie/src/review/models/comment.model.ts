@@ -4,7 +4,7 @@ import { Review } from "./review.model";
 @Table({ tableName: 'comment' })
 export class Comment extends Model<Comment> {
   @Column({ type: DataType.BIGINT, primaryKey: true, autoIncrement: true })
-  id: number;
+  id: string;
 
   @Column({ type: DataType.TEXT, allowNull: false })
   comment: string;
@@ -20,7 +20,7 @@ export class Comment extends Model<Comment> {
 
   @ForeignKey(() => Comment)
   @Column({ field: 'fk_parent_id', type: DataType.BIGINT, allowNull: true })
-  parentId: number; // parent comment
+  parentId: string; // parent comment
 
   @ForeignKey(() => Review)
   @Column({ field: 'fk_review_id', type: DataType.INTEGER, allowNull: false })

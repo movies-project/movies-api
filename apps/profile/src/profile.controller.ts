@@ -1,12 +1,13 @@
-import { Body, Controller, Get, HttpCode, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { MessagePattern, Payload } from "@nestjs/microservices";
+import { JwtAuthGuard } from "@app/auth-shared/session/guards/jwt.guard";
+import { AuthenticatedRequest } from "@app/auth-shared/session/interfaces/authenticated-request.interface";
+import { Profile } from "@app/profile-shared/models/profile.model";
 import { ProfileService } from './profile.service';
 import { ProfileRegistrationDto } from "./dto/profile-registration.dto";
-import { JwtAuthGuard } from "@app/guards/jwt.guard";
 
 @ApiTags('Профиль')
-@Controller('profile')
+@Controller('profiles')
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
@@ -14,24 +15,15 @@ export class ProfileController {
   @ApiOperation({ summary: 'Создать профиль' })
   @ApiCreatedResponse({ description: 'Профиль успешно создан' })
   async createProfileAndUser(@Body() data: ProfileRegistrationDto) {
-    return {
-      status: 'success',
-      profileId: await this.profileService.createProfileAndUser(data)
-    };
+    return await this.profileService.createProfileAndUser(data);
   }
 
-  @Get()
-  @UseGuards(JwtAuthGuard())
+  @Get('/self')
+  @JwtAuthGuard()
   @ApiOperation({ summary: 'Получение собственного профиля' })
   @ApiOkResponse({ description: 'Успешное получение профиля' })
   @ApiBearerAuth()
-  async findOne(@Request() req) {
-    const userInfo = req['user'];
-    return this.profileService.findByUserId(userInfo.id);
-  }
-
-  @MessagePattern('profile_find_by_user_id')
-  async findByUserId(@Payload() userId: number) {
-    return this.profileService.findByUserId(userId);
+  async findOne(@Request() req: AuthenticatedRequest): Promise<Profile> {
+    return this.profileService.findByUserId(req.accessTokenData.user.id);
   }
 }

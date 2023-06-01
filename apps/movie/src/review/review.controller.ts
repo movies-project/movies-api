@@ -1,39 +1,71 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get, HttpCode,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+  Request,
+  UseGuards, UsePipes
+} from "@nestjs/common";
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse, ApiOkResponse,
+  ApiOperation, ApiParam,
+  ApiQuery,
+  ApiTags
+} from "@nestjs/swagger";
 import { ReviewService } from "./review.service";
 import { Review } from "./models/review.model";
 import { Comment } from "./models/comment.model";
 import { ReviewDto } from "./dto/review.dto";
-import { JwtAuthGuard } from "@app/guards/jwt.guard";
-import { UpdateMovieDto } from "../movie/dto/update-movie.dto";
 import { ResourceType, ReviewOwnerGuard } from "./guards/review-owner.guard";
-import { ReviewType } from "./common/review-type";
 import { ReviewStructureType } from "./common/review-structure-type";
-import { apiConfig } from "@app/config/api.config";
 import { CommentDto } from "./dto/comment.dto";
+import { ApiNoContentResponse } from "@nestjs/swagger/dist/decorators/api-response.decorator";
+import { reviewConfig } from "./config/review.config";
+import { LimitValidationPipe } from "@app/pipes/limit-validation.pipe";
+import { JwtAuthGuard } from "@app/auth-shared/session/guards/jwt.guard";
 
 @ApiTags('Обзоры и комментарии')
-@Controller('review')
+@Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
-  @Get(':id')
+  @Get('/:reviewId')
   @ApiOperation({ summary: 'Поиск обзора по id' })
-  @ApiResponse({ description: 'Обзор найден' })
-  async findReview(@Param('id') id: number): Promise<Review> {
-    return await this.reviewService.findReview(id);
+  @ApiOkResponse({ description: 'Обзор найден' })
+  @ApiNotFoundResponse({ description: 'Обзор не найден' })
+  @ApiParam({ name: 'reviewId', required: true, type: Number, description: 'Идентификатор обзора' })
+  async findReview(@Param('reviewId') reviewId: number): Promise<Review> {
+    const review = await this.reviewService.findReview(reviewId);
+    if (!review)
+      throw new NotFoundException('Обзор не найден');
+    return review;
   }
 
-  @Get('comment/:id')
+  @Get('/:reviewId/comments/:commentId')
   @ApiOperation({ summary: 'Поиск комментария на обзор по id' })
-  @ApiResponse({ description: 'Комментарий найден' })
-  async findComment(@Param('id') id: number): Promise<Comment> {
-    return await this.reviewService.findComment(id);
+  @ApiOkResponse({ description: 'Комментарий найден' })
+  @ApiNotFoundResponse({ description: 'Комментарий не найден' })
+  @ApiParam({ name: 'reviewId', required: true, type: Number, description: 'Идентификатор обзора' })
+  @ApiParam({ name: 'commentId', required: true, type: Number, description: 'Идентификатор комментария' })
+  async findComment(@Param() params): Promise<Comment> {
+    const { reviewId, commentId } = params;
+    const comment = await this.reviewService.findComment(reviewId, commentId);
+    if (!comment)
+      throw new NotFoundException('Комментарий не найден');
+    return comment;
   }
 
-  @Get('movie/:movieId')
+  @Get()
+  @UsePipes(new LimitValidationPipe(reviewConfig.REVIEW_LIST_LIMIT))
   @ApiOperation({ summary: 'Список обзоров и комментариев' })
-  @ApiResponse({ description: 'Получен список обзоров и комментариев' })
+  @ApiOkResponse({ description: 'Получен список обзоров и комментариев' })
+  @ApiQuery({ name: 'movieId', required: true, type: Number, description: 'Идентификатор фильма' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Количество возвращенных обзоров' })
   @ApiQuery({ name: 'offset', required: false, type: Number, description: 'Количество пропускаемых обзоров' })
   @ApiQuery({ name: 'view', required: false, enum: ReviewStructureType,
@@ -44,17 +76,16 @@ export class ReviewController {
       + 'Количество отображенных комментариев не будет зависить от формата выше'
   })
   async getReviewsByMovie(
-    @Param('movieId') movieId: string,
+    @Query('movieId') movieId: number,
     @Query('limit') limit: number,
     @Query('offset') offset: number,
     @Query('view') view: ReviewStructureType
-  ) {
-    limit = Math.max(limit, apiConfig.REVIEW_LIST_LIMIT);
-    return await this.reviewService.getReviews(+movieId, limit, offset, view);
+  ): Promise<Review[]> {
+    return await this.reviewService.getReviews(movieId, limit, offset, view);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard())
+  @JwtAuthGuard()
   @ApiOperation({ summary: 'Создание обзора' })
   @ApiCreatedResponse({ description: 'Обзор создан' })
   @ApiBearerAuth()
@@ -62,30 +93,46 @@ export class ReviewController {
     return await this.reviewService.createReview(data, req.userId);
   }
 
-  @Post('/comment')
-  @UseGuards(JwtAuthGuard())
+  @Post('/:reviewId/comments')
+  @JwtAuthGuard()
   @ApiOperation({ summary: 'Создание комментария на обзор' })
   @ApiCreatedResponse({ description: 'Комментарий создан' })
   @ApiBearerAuth()
+  @ApiParam({ name: 'reviewId', required: true, type: Number, description: 'Идентификатор обзора' })
   async createComment(@Body() data: CommentDto, @Request() req): Promise<Comment> {
     return await this.reviewService.createComment(data, req.userId);
   }
 
-  @Delete()
-  @UseGuards(ReviewOwnerGuard(ResourceType.Comment))
+  @Delete('/:reviewId')
+  @HttpCode(204)
+  @ReviewOwnerGuard(ResourceType.Comment)
   @ApiOperation({ summary: 'Удалить обзор' })
-  @ApiResponse({ description: 'Обзор удален' })
+  @ApiNoContentResponse({ description: 'Обзор удален' })
+  @ApiNotFoundResponse({ description: 'Обзор не найден' })
+  @ApiParam({ name: 'reviewId', required: true, type: Number, description: 'Идентификатор обзора' })
   @ApiBearerAuth()
-  async deleteReview(@Body() data: { id: number }) {
-    return await this.reviewService.deleteReview(data.id);
+  async deleteReview(@Param('reviewId') reviewId: number): Promise<void> {
+    const result: boolean = await this.reviewService.deleteReview(reviewId);
+    if (!result)
+      throw new NotFoundException('Обзор не найден');
   }
 
-  @Delete('comment')
-  @UseGuards(ReviewOwnerGuard(ResourceType.Comment))
+  @Delete('/:reviewId/comments/:commentId')
+  @HttpCode(204)
+  @ReviewOwnerGuard(ResourceType.Comment)
   @ApiOperation({ summary: 'Удалить комментарий на обзор' })
-  @ApiResponse({ description: 'Комметарий удален' })
+  @ApiNoContentResponse({ description: 'Комметарий удален' })
+  @ApiNotFoundResponse({ description: 'Комментарий не найден' })
+  @ApiParam({ name: 'reviewId', required: true, type: Number, description: 'Идентификатор обзора' })
+  @ApiParam({ name: 'commentId', required: true, type: Number, description: 'Идентификатор комментария' })
   @ApiBearerAuth()
-  async deleteComment(@Body() data: { id: number }) {
-    return await this.reviewService.deleteComment(data.id);
+  async deleteComment(@Param() params): Promise<void> {
+    const { reviewId, commentId } = params;
+    const result: boolean = await this.reviewService.deleteComment(
+      reviewId,
+      commentId
+    );
+    if (!result)
+      throw new NotFoundException('Комментарий не найден');
   }
 }

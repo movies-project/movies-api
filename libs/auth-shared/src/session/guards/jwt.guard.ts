@@ -1,10 +1,17 @@
-import { applyDecorators, CanActivate, ExecutionContext, Injectable, UseGuards } from "@nestjs/common";
+import {
+  applyDecorators,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UseGuards
+} from "@nestjs/common";
 import { ApiUnauthorizedResponse } from "@nestjs/swagger";
 
 import { VerifyAccessTokenIdto } from "@app/auth-shared/session/internal-dto/verify-access-token.idto";
 import { SessionSharedService } from "@app/auth-shared/session/session-shared.service";
 
 import { AuthenticatedRequest } from "../interfaces/authenticated-request.interface";
+import { InvalidAccessTokenException } from "@app/auth-shared/session/common/invalid-access-token-exception";
 
 export const ADMIN_ROLE = 'admin';
 
@@ -21,7 +28,7 @@ export class JwtAuthGuardMixin implements CanActivate {
     const authHeader = request.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return false;
+      throw new InvalidAccessTokenException();
     }
 
     const accessToken = authHeader.slice(7, authHeader.length);
@@ -32,7 +39,7 @@ export class JwtAuthGuardMixin implements CanActivate {
     );
 
     if (!authInfo?.authorized)
-      return false;
+      throw new InvalidAccessTokenException();
 
     request.accessTokenData = authInfo.token;
 

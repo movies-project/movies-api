@@ -1,11 +1,18 @@
-import { ApiBody } from "@nestjs/swagger";
-import { applyDecorators, CanActivate, ExecutionContext, Injectable, UseGuards } from "@nestjs/common";
+import { ApiBody, ApiUnauthorizedResponse } from "@nestjs/swagger";
+import {
+  applyDecorators,
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UseGuards
+} from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { AuthCredentialsDto } from "@app/auth-shared/session/dto/auth-credentials.dto";
 import { UserSharedService } from "@app/auth-shared/user/user-shared.service";
 import {
   CredentialsAuthenticatedRequest
 } from "@app/auth-shared/session/interfaces/credentials-authenticated-request.interface";
+import { InvalidCredentialsException } from "@app/auth-shared/session/common/invalid-credentials-exception";
 
 export function LoginGuard() {
   @Injectable()
@@ -23,7 +30,7 @@ export function LoginGuard() {
       const user = await this.userSharedService.findByEmail(authCredentials.email);
 
       if (!user)
-        return false;
+        throw new InvalidCredentialsException();
 
       const passwordEquals = await bcrypt.compare(
         authCredentials.password,
@@ -31,7 +38,7 @@ export function LoginGuard() {
       );
 
       if (!passwordEquals)
-        return false;
+        throw new InvalidCredentialsException();
 
       request.user = user;
 
@@ -41,6 +48,7 @@ export function LoginGuard() {
 
   return applyDecorators(
     UseGuards(LoginGuard),
-    ApiBody({ type: AuthCredentialsDto, description: 'Данные авторизации' })
+    ApiBody({ type: AuthCredentialsDto, description: 'Данные авторизации' }),
+    ApiUnauthorizedResponse( { description: 'Неверные учетные данные' })
   );
 }

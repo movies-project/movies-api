@@ -55,6 +55,18 @@
             "method": "POST"
         },
         {
+            "endpoint": "/movies",
+            "input_query_strings": [
+                "genre_id",
+                "country_id",
+                "min_rating",
+                "min_votes"
+            ],
+            "backend": "/movies",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
             "endpoint": "/genres",
             "backend": "/genres",
             "host": "http://movie:3003",

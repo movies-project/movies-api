@@ -5,8 +5,8 @@ import { rabbitmqConfig } from "@app/config";
 import { sessionPatterns } from "@app/microservices/auth/session.patterns";
 import { AuthResponseIdto } from "@app/auth-shared/session/internal-dto/auth-response.idto";
 import { VerifyAccessTokenIdto } from "@app/auth-shared/session/internal-dto/verify-access-token.idto";
-import { VerifyAccessTokenResponseIdto } from "@app/auth-shared/session/internal-dto/verify-access-token-response.idto";
 import { User } from "@app/auth-shared/user/models/user.model";
+import { VerificationTokenResult } from "@app/auth-shared/session/common/verification-token-result";
 
 @Injectable()
 export class SessionSharedService {
@@ -21,7 +21,7 @@ export class SessionSharedService {
     );
   }
 
-  async verifyAccessToken(data: VerifyAccessTokenIdto): Promise<VerifyAccessTokenResponseIdto> {
+  async verifyAccessToken(data: VerifyAccessTokenIdto): Promise<VerificationTokenResult> {
     return await firstValueFrom(
       this.authService.send(sessionPatterns.VERIFY_ACCESS_TOKEN, data)
     );

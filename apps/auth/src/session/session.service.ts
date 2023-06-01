@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import * as uuid from "uuid";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRedis } from "@liaoliaots/nestjs-redis";
@@ -10,6 +10,10 @@ import { redisConfig } from "@app/config/redis.config";
 import { Token, TokenType, TokenUser } from "@app/auth-shared/session/interfaces/token.interface";
 import { User } from "@app/auth-shared/user/models/user.model";
 import { TokenPair } from "@app/auth-shared/session/interfaces/token-pair.interface";
+import {
+  VerificationTokenError,
+  VerificationTokenResult
+} from "@app/auth-shared/session/common/verification-token-result";
 
 const ms = require('ms');
 
@@ -78,7 +82,7 @@ export class SessionService {
     };
   }
 
-  async verifyAccessToken(accessToken: string, role: string): Promise<Token> {
+  async verifyAccessToken(accessToken: string, role: string): Promise<VerificationTokenResult> {
     const isSessionBlacklisted = async (userId: number, session: string) => {
       const redisBlacklistKey = SessionService.getBlacklistRedisPrefix(userId);
       const countBlockedSessions = await this.redis.sismember(redisBlacklistKey, session);
@@ -90,28 +94,38 @@ export class SessionService {
     }
 
     // Раскодируем токен
-    const decodedAccessToken = <Token>this.jwtService.verify(accessToken, verifyOptions);
+    let decodedAccessToken;
+    try {
+      decodedAccessToken = <Token>this.jwtService.verify(accessToken, verifyOptions);
+    } catch {
+      return { authorized: false, error: VerificationTokenError.InvalidToken };
+    }
 
     if (decodedAccessToken.type !== TokenType.AccessToken)
-      throw new UnauthorizedException('invalid token type');
+      return { authorized: false, error: VerificationTokenError.InvalidTokenType };
     if (role && (role !== decodedAccessToken.user.role))
-      throw new ForbiddenException();
+      return { authorized: false, error: VerificationTokenError.ForbiddenRole } ;
     if (await isSessionBlacklisted(decodedAccessToken.user.id, decodedAccessToken.session))
-      throw new UnauthorizedException('session expired');
+      return { authorized: false, error: VerificationTokenError.ExpiredSession };
 
-    return decodedAccessToken;
+    return { authorized: true, token: decodedAccessToken };
   }
 
-  async verifyRefreshToken(refreshToken: string): Promise<Token> {
+  async verifyRefreshToken(refreshToken: string): Promise<VerificationTokenResult> {
     const verifyOptions = {
       secret: jwtConfig.JWT_ACCESS_TOKEN_SIGN_OPTIONS.secret
     }
 
     // Раскодируем токен
-    const decodedRefreshToken = <Token>this.jwtService.verify(refreshToken, verifyOptions);
+    let decodedRefreshToken;
+    try {
+      decodedRefreshToken = <Token>this.jwtService.verify(refreshToken, verifyOptions);
+    } catch {
+      return { authorized: false, error: VerificationTokenError.InvalidToken };
+    }
 
     if (decodedRefreshToken.type !== TokenType.RefreshToken)
-      throw new UnauthorizedException('invalid token type');
+      return { authorized: false, error: VerificationTokenError.InvalidTokenType };
 
     // Проверим, есть ли refresh token в базе данных
     const redisKey = SessionService.getRefreshTokenRedisPrefix(
@@ -120,9 +134,9 @@ export class SessionService {
     );
 
     if (!await this.redis.exists(redisKey))
-      throw new UnauthorizedException('session expired');
+      return { authorized: false, error: VerificationTokenError.ExpiredSession };
 
-    return decodedRefreshToken;
+    return { authorized: true, token: decodedRefreshToken };
   }
 
   async logout(userId, userSession): Promise<void> {

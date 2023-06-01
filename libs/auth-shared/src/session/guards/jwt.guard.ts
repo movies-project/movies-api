@@ -1,17 +1,13 @@
-import {
-  applyDecorators,
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UseGuards
-} from "@nestjs/common";
-import { ApiUnauthorizedResponse } from "@nestjs/swagger";
+import { applyDecorators, CanActivate, ExecutionContext, Injectable, UseGuards } from "@nestjs/common";
+import { ApiForbiddenResponse, ApiUnauthorizedResponse } from "@nestjs/swagger";
 
 import { VerifyAccessTokenIdto } from "@app/auth-shared/session/internal-dto/verify-access-token.idto";
 import { SessionSharedService } from "@app/auth-shared/session/session-shared.service";
 
 import { AuthenticatedRequest } from "../interfaces/authenticated-request.interface";
 import { InvalidAccessTokenException } from "@app/auth-shared/session/common/invalid-access-token-exception";
+import { VerificationTokenError } from "@app/auth-shared/session/common/verification-token-result";
+import { RolePermissionException } from "@app/auth-shared/session/common/role-permission-exception";
 
 export const ADMIN_ROLE = 'admin';
 
@@ -38,8 +34,14 @@ export class JwtAuthGuardMixin implements CanActivate {
       <VerifyAccessTokenIdto>{ accessToken, role: this.role }
     );
 
-    if (!authInfo?.authorized)
+    if (!authInfo)
       throw new InvalidAccessTokenException();
+
+    if (!authInfo.authorized) {
+      if (authInfo.error === VerificationTokenError.ForbiddenRole)
+        throw new RolePermissionException();
+      throw new InvalidAccessTokenException();
+    }
 
     request.accessTokenData = authInfo.token;
 
@@ -55,9 +57,11 @@ export function JwtAuthGuard(role?: string) {
     }
   }
 
-  // Добавляем ошибку 401 Unauthorized для документации Swagger
+  // Добавляем ошибку 401 Unauthorized и 403 Forbidden для документации Swagger
   return applyDecorators(
     UseGuards(InternalJwtAuthGuardMixin),
-    ApiUnauthorizedResponse( { description: 'Невалидный токен доступа' })
+    ApiUnauthorizedResponse( { description: 'Невалидный токен доступа' }),
+    // Если роль существует, то добавляем 403 ошибку
+    role ? ApiForbiddenResponse({description: 'Отказано в доступе'}) : () => {}
   );
 }

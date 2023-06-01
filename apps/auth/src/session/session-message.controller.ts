@@ -4,9 +4,9 @@ import { Controller } from "@nestjs/common";
 import { sessionPatterns } from "@app/microservices/auth/session.patterns";
 import { AuthResponseIdto } from "@app/auth-shared/session/internal-dto/auth-response.idto";
 import { VerifyAccessTokenIdto } from "@app/auth-shared/session/internal-dto/verify-access-token.idto";
-import { VerifyAccessTokenResponseIdto } from "@app/auth-shared/session/internal-dto/verify-access-token-response.idto";
 import { User } from "@app/auth-shared/user/models/user.model";
 import { SessionService } from "./session.service";
+import { VerificationTokenResult } from "@app/auth-shared/session/common/verification-token-result";
 
 @Controller('session-message')
 export class SessionMessageController {
@@ -19,23 +19,12 @@ export class SessionMessageController {
 
   @MessagePattern(sessionPatterns.VERIFY_ACCESS_TOKEN)
   async verifyAccessToken(@Payload() data: VerifyAccessTokenIdto)
-    : Promise<VerifyAccessTokenResponseIdto>
+    : Promise<VerificationTokenResult>
   {
-    try {
-      const decodedAccessToken = await this.sessionService.verifyAccessToken(
-        data.accessToken,
-        data.role
-      );
-      return {
-        authorized: true,
-        token: decodedAccessToken,
-      }
-    } catch {
-      return {
-        authorized: false,
-        token: undefined
-      }
-    }
+    return this.sessionService.verifyAccessToken(
+      data.accessToken,
+      data.role
+    );
   }
 
 }

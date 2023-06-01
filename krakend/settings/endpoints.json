@@ -149,6 +149,18 @@
             "backend": "/reviews/{reviewId}/comments/{commentId}",
             "host": "http://movie:3003",
             "method": "DELETE"
+        },
+        {
+            "endpoint": "/genres",
+            "backend": "/genres",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/genres/{id}",
+            "backend": "/genres/{id}",
+            "host": "http://movie:3003",
+            "method": "PUT"
         }
     ]
 }

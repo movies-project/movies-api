@@ -165,11 +165,11 @@
                 "http://auth:3001"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/profiles",
         "output_encoding": "no-op",
@@ -183,11 +183,11 @@
                 "http://profile:3002"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/profiles/self",
         "output_encoding": "no-op",
@@ -201,11 +201,11 @@
                 "http://profile:3002"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies/{id}",
         "output_encoding": "no-op",
@@ -219,11 +219,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies/random",
         "output_encoding": "no-op",
@@ -237,11 +237,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies",
         "output_encoding": "no-op",
@@ -255,11 +255,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies/best",
         "output_encoding": "no-op",
@@ -273,11 +273,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies",
         "output_encoding": "no-op",
@@ -291,11 +291,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies/{id}",
         "output_encoding": "no-op",
@@ -309,11 +309,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/movies/{id}",
         "output_encoding": "no-op",
@@ -327,11 +327,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews/{reviewId}",
         "output_encoding": "no-op",
@@ -345,11 +345,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews/{reviewId}/comments/{commentId}",
         "output_encoding": "no-op",
@@ -363,11 +363,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews",
         "output_encoding": "no-op",
@@ -381,11 +381,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews",
         "output_encoding": "no-op",
@@ -399,11 +399,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews/{reviewId}/comments",
         "output_encoding": "no-op",
@@ -417,11 +417,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews/{reviewId}",
         "output_encoding": "no-op",
@@ -435,11 +435,11 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
-        
+
         {
         "endpoint": "/reviews/{reviewId}/comments/{commentId}",
         "output_encoding": "no-op",
@@ -453,10 +453,44 @@
                 "http://movie:3003"
             ],
             "extra_config": {
-                
+
             }
         }]
         },
         
+        {
+        "endpoint": "/genres",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/genres",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+
+            }
+        }]
+        },
+
+        {
+        "endpoint": "/genres/{id}",
+        "output_encoding": "no-op",
+        "method": "PUT",
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/genres/{id}",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+
+            }
+        }]
+        },
+
     ]
 }

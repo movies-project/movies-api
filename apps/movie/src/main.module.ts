@@ -12,6 +12,7 @@ import { redisConfig } from "@app/config/redis.config";
     RedisModule.forRoot(redisConfig.REDIS_MOVIE_OPTIONS),
     MovieModule,
     ReviewModule,
+    GenreModule
   ],
   controllers: [],
   providers: [],

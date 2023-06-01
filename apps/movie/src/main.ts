@@ -10,9 +10,12 @@ async function bootstrap() {
   SharedModule.setupSwaggerFromConfig(app, swaggerConfig.docs.MOVIE_API);
 
   app.enableCors();
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe(
+    {
+      whitelist: true,    // чтобы DTO принимали только необходимые поля
+    }
+  ));
 
   await app.listen(3003);
 }
-
 bootstrap();

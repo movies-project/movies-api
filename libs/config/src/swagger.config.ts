@@ -5,27 +5,29 @@ export type DocsConfig = {
     endpoint: string
 }
 
-const SWAGGER_MODULE_DESCRIPTION = '### Раздел API для работы с данными профиля пользователя\n\n'
-    + 'Текущая документация является многостраничной.\n\n'
-    + 'Выбрать необходимый раздел можно в выпадающем списке в «Select a definition».'
+const SWAGGER_MODULE_DESCRIPTION = 'Документация API является многостраничной.  ' +
+    'Выбрать необходимый раздел можно в выпадающем списке в «Select a definition».'
 
 const docs = {
     AUTH_API: <DocsConfig>{
         url: 'http://auth:3001/api-docs',
         name: 'Auth API',
-        description: SWAGGER_MODULE_DESCRIPTION,
+        description: '### Раздел API для авторизации и получения данных пользователя' +
+            SWAGGER_MODULE_DESCRIPTION,
         endpoint: 'auth'
     },
     PROFILE_API: <DocsConfig>{
         url: 'http://profile:3002/api-docs',
         name: 'Profile API',
-        description: SWAGGER_MODULE_DESCRIPTION,
+        description: '### Раздел API для работы с данными профиля пользователя' +
+            SWAGGER_MODULE_DESCRIPTION,
         endpoint: 'profile'
     },
     MOVIE_API: <DocsConfig>{
         url: 'http://movie:3003/api-docs',
         name: 'Movie API',
-        description: SWAGGER_MODULE_DESCRIPTION,
+        description: '### Раздел API для работы с фильмами' +
+            SWAGGER_MODULE_DESCRIPTION,
         endpoint: 'movie'
     }
 }

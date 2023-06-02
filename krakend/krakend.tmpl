@@ -8,22 +8,23 @@
     "port": 80,
     "endpoints": [
         {{ range $idx, $endpoint := .endpoints.default }}
-        {
-        "endpoint": "{{ $endpoint.endpoint }}",
-        "output_encoding": "no-op",
-        "method": "{{ $endpoint.method }}",
-        "input_headers": ["Authorization", "Content-Type"],
-        "backend": [{
-            "encoding": "no-op",
-            "url_pattern": "{{ $endpoint.backend }}",
-            "host": [
-                "{{ $endpoint.host }}"
-            ],
-            "extra_config": {
-                {{ include "rate_limit_backend.json" }}
-            }
-        }]
-        },
+            {
+            "endpoint": "{{ $endpoint.endpoint }}",
+            "input_query_strings": {{ marshal $endpoint.input_query_strings }},
+            "output_encoding": "no-op",
+            "method": "{{ $endpoint.method }}",
+            "input_headers": ["Authorization", "Content-Type"],
+            "backend": [{
+                "encoding": "no-op",
+                "url_pattern": "{{ $endpoint.backend }}",
+                "host": [
+                    "{{ $endpoint.host }}"
+                ],
+                "extra_config": {
+                    {{ include "rate_limit_backend.json" }}
+                }
+            }]
+            },
         {{ end }}
     ]
 }

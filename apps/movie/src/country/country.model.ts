@@ -2,15 +2,15 @@ import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescrip
 import {ApiProperty} from "@nestjs/swagger";
 
 
-interface GenreCreationAttrs {   // поля, которые нужны для создания класса Genre
+interface CountryCreationAttrs {    // поля, которые нужны для создания класса Country
     name: string;
 }
 
-@Table({        // чтобы класс стал таблицей в бд, таблица genre
-    tableName: 'genre',
+@Table({        // чтобы класс стал таблицей в бд, таблица country
+    tableName: 'country',
     createdAt: false       // не добавлять дату создания
 })
-export class Genre extends Model<Genre, GenreCreationAttrs> {
+export class Country extends Model<Country, CountryCreationAttrs> {
 
     @ApiProperty({      // документирование swagger, Response Schema
         example: '1',
@@ -26,8 +26,8 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
 
 
     @ApiProperty({      // документирование swagger, Response Schema
-        example: 'фантастика',
-        description: 'Уникальное название жанра'
+        example: 'Австралия',
+        description: 'Уникальное название страны'
     })
     @Column({
         type: DataType.STRING,
@@ -38,8 +38,8 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
 
 
     @ApiProperty({      // документирование swagger, Response Schema
-        example: 'fantastic',
-        description: 'Уникальное название жанра на английском языке',
+        example: 'Australia',
+        description: 'Уникальное название страны на английском языке',
         nullable: true      // может быть пустым
     })
     @Column({
@@ -55,8 +55,9 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
     // // многие-ко-многим
     // @BelongsToMany(
     //     () => Movie,
-    //     'film_genre',
-    //     'genre_id',
-    //     'film_id')      // связываем Genre с Movie через таблицу film_genre
+    //     'film_country',
+    //     'country_id',
+    //     'film_id')      // связываем Country с Movie через таблицу film_country
     // movie: Movie[];           // поле: тип
+
 }

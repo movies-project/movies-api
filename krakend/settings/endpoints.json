@@ -161,6 +161,12 @@
             "backend": "/genres/{id}",
             "host": "http://movie:3003",
             "method": "PUT"
+        },
+        {
+            "endpoint": "/countries",
+            "backend": "/countries",
+            "host": "http://movie:3003",
+            "method": "GET"
         }
     ]
 }

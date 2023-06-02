@@ -8,6 +8,7 @@ import { AuthenticatedRequest } from "../interfaces/authenticated-request.interf
 import { InvalidAccessTokenException } from "@app/auth-shared/session/common/invalid-access-token-exception";
 import { VerificationTokenError } from "@app/auth-shared/session/common/verification-token-result";
 import { RolePermissionException } from "@app/auth-shared/session/common/role-permission-exception";
+import { SharedModule } from "@app/shared";
 
 export const ADMIN_ROLE = 'admin';
 
@@ -57,11 +58,20 @@ export function JwtAuthGuard(role?: string) {
     }
   }
 
+  const apiUnauthorizedResponse = ApiUnauthorizedResponse( {
+    description: 'Невалидный токен доступа',
+    type: SharedModule.generateDocsByHttpException(new InvalidAccessTokenException())
+  });
+  const apiForbiddenResponse = ApiForbiddenResponse({
+    description: 'Отказано в доступе',
+    type: SharedModule.generateDocsByHttpException(new RolePermissionException())
+  });
+
   // Добавляем ошибку 401 Unauthorized и 403 Forbidden для документации Swagger
   return applyDecorators(
     UseGuards(InternalJwtAuthGuardMixin),
-    ApiUnauthorizedResponse( { description: 'Невалидный токен доступа' }),
+    apiUnauthorizedResponse,
     // Если роль существует, то добавляем 403 ошибку
-    role ? ApiForbiddenResponse({description: 'Отказано в доступе'}) : () => {}
+    role ? apiForbiddenResponse : () => {}
   );
 }

@@ -2,33 +2,38 @@ import {
   Body,
   Controller,
   Delete,
-  Get, HttpCode,
+  Get,
+  HttpCode,
   NotFoundException,
   Param,
   Post,
   Query,
   Request,
-  UseGuards, UsePipes
+  UsePipes
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiNotFoundResponse, ApiOkResponse,
-  ApiOperation, ApiParam,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiTags
 } from "@nestjs/swagger";
-import { ReviewService } from "./review.service";
-import { Review } from "./models/review.model";
-import { Comment } from "./models/comment.model";
-import { ReviewDto } from "./dto/review.dto";
-import { ResourceType, ReviewOwnerGuard } from "./guards/review-owner.guard";
-import { ReviewStructureType } from "./common/review-structure-type";
-import { CommentDto } from "./dto/comment.dto";
-import { ApiNoContentResponse } from "@nestjs/swagger/dist/decorators/api-response.decorator";
-import { reviewConfig } from "./config/review.config";
-import { LimitValidationPipe } from "@app/pipes/limit-validation.pipe";
-import { JwtAuthGuard } from "@app/auth-shared/session/guards/jwt.guard";
+import {ApiNoContentResponse} from "@nestjs/swagger/dist/decorators/api-response.decorator";
+
+import {ReviewService} from "./review.service";
+import {Review} from "./models/review.model";
+import {Comment} from "./models/comment.model";
+import {ReviewDto} from "./dto/review.dto";
+import {ResourceType, ReviewOwnerGuard} from "./guards/review-owner.guard";
+import {ReviewStructureType} from "./common/review-structure-type";
+import {CommentDto} from "./dto/comment.dto";
+import {reviewConfig} from "./config/review.config";
+import {LimitValidationPipe} from "@app/pipes/limit-validation.pipe";
+import {JwtAuthGuard} from "@app/auth-shared/session/guards/jwt.guard";
+
 
 @ApiTags('Обзоры и комментарии')
 @Controller('reviews')
@@ -62,7 +67,9 @@ export class ReviewController {
   }
 
   @Get()
-  @UsePipes(new LimitValidationPipe(reviewConfig.REVIEW_LIST_LIMIT))
+  @UsePipes(new LimitValidationPipe(
+      reviewConfig.REVIEW_LIST_LIMIT.minLimit,
+      reviewConfig.REVIEW_LIST_LIMIT.maxLimit))
   @ApiOperation({ summary: 'Список обзоров и комментариев' })
   @ApiOkResponse({ description: 'Получен список обзоров и комментариев' })
   @ApiQuery({ name: 'movieId', required: true, type: Number, description: 'Идентификатор фильма' })
@@ -73,14 +80,13 @@ export class ReviewController {
       + '1. **flat** - все комментарии находятся на одном уровне\n'
       + '2. **tree** - древовидная структура с одним вложением-ответом\n'
       + '3. **tree-deep** - полная древовидная структура со всеми вложениями\n\n'
-      + 'Количество отображенных комментариев не будет зависить от формата выше'
+      + 'Количество отображенных комментариев не будет зависеть от формата выше'
   })
   async getReviewsByMovie(
     @Query('movieId') movieId: number,
     @Query('limit') limit: number,
     @Query('offset') offset: number,
-    @Query('view') view: ReviewStructureType
-  ): Promise<Review[]> {
+    @Query('view') view: ReviewStructureType): Promise<Review[]> {
     return await this.reviewService.getReviews(movieId, limit, offset, view);
   }
 
@@ -121,7 +127,7 @@ export class ReviewController {
   @HttpCode(204)
   @ReviewOwnerGuard(ResourceType.Comment)
   @ApiOperation({ summary: 'Удалить комментарий на обзор' })
-  @ApiNoContentResponse({ description: 'Комметарий удален' })
+  @ApiNoContentResponse({ description: 'Комментарий удален' })
   @ApiNotFoundResponse({ description: 'Комментарий не найден' })
   @ApiParam({ name: 'reviewId', required: true, type: Number, description: 'Идентификатор обзора' })
   @ApiParam({ name: 'commentId', required: true, type: Number, description: 'Идентификатор комментария' })

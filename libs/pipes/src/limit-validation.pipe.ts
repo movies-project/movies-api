@@ -1,23 +1,35 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from "@nestjs/common";
+import {ArgumentMetadata, BadRequestException, Injectable, PipeTransform} from "@nestjs/common";
 
 @Injectable()
 export class LimitValidationPipe implements PipeTransform {
-  constructor(private readonly maxLimit: number) {}
+    constructor(private readonly minLimit: number,
+                private readonly maxLimit: number) {
+    }
 
-  transform(value: any, metadata: ArgumentMetadata) {
-    if (metadata.type != 'query')
-      return value;
+    transform(fieldValue: any, metadata: ArgumentMetadata) {     // fieldValue - значение передаваемого поля
 
-    if (!value.offset)
-      value.offset = 0;
+        if (metadata.type != 'query') {
+            return fieldValue;
+        }
 
-    if (!value.limit)
-      value.limit = this.maxLimit;
+        if (metadata.data == 'offset') {
+            fieldValue = Number(fieldValue);
+            if (!fieldValue) {
+                fieldValue = 0;
+            }
+        }
 
-    if (value.limit > this.maxLimit)
-      throw new BadRequestException(`Превышен лимит возвращаемых значений. `
-        + `Максимальноне возможное количество возвращаемых значений - ${this.maxLimit}`);
+        if (metadata.data == 'limit') {
+            fieldValue = Number(fieldValue);
+            if (!fieldValue) {
+                fieldValue = this.minLimit;
+            }
+        }
 
-    return value;
-  }
+        if (metadata.data == 'limit' && fieldValue > this.maxLimit)
+            throw new BadRequestException(`Превышен лимит возвращаемых значений. `
+                + `Максимально возможное количество возвращаемых значений - ${this.maxLimit}`);
+
+        return fieldValue;
+    }
 }

@@ -1,5 +1,6 @@
 import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
+import {Movie} from "../movie/models/movie.model";
 
 
 interface CountryCreationAttrs {    // поля, которые нужны для создания класса Country
@@ -50,14 +51,13 @@ export class Country extends Model<Country, CountryCreationAttrs> {
     name_en: string;     // поле
 
 
-    // TODO: раскомментировать после добавления Movie
-
-    // // многие-ко-многим
-    // @BelongsToMany(
-    //     () => Movie,
-    //     'film_country',
-    //     'country_id',
-    //     'film_id')      // связываем Country с Movie через таблицу film_country
-    // movie: Movie[];           // поле: тип
+    // многие-ко-многим
+    // связываем Country с Movie через таблицу film_country
+    @BelongsToMany(
+        () => Movie,
+        'film_country',
+        'country_id',
+        'film_id')
+    movies: Movie[];           // поле: тип
 
 }

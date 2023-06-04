@@ -1,5 +1,6 @@
 import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
+import {Movie} from "../movie/models/movie.model";
 
 
 interface GenreCreationAttrs {   // поля, которые нужны для создания класса Genre
@@ -50,13 +51,13 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
     name_en: string;     // поле
 
 
-    // TODO: раскомментировать после добавления Movie
+    // многие-ко-многим
+    // связываем Genre с Movie через таблицу film_genre
+    @BelongsToMany(
+        () => Movie,
+        'film_genre',
+        'genre_id',
+        'film_id')
+    movies: Movie[];           // поле: тип
 
-    // // многие-ко-многим
-    // @BelongsToMany(
-    //     () => Movie,
-    //     'film_genre',
-    //     'genre_id',
-    //     'film_id')      // связываем Genre с Movie через таблицу film_genre
-    // movie: Movie[];           // поле: тип
 }

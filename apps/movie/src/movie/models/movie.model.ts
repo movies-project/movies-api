@@ -1,4 +1,5 @@
-import { Model, Table, Column, DataType } from "sequelize-typescript";
+import {Model, Table, Column, DataType, BelongsToMany} from "sequelize-typescript";
+
 import { Rating } from "../common/rating";
 import { Fee, Fees } from "../common/fee";
 import { Premiere } from "../common/premiere";
@@ -6,9 +7,12 @@ import { Votes } from "../common/votes";
 import { Distributors } from "../common/distributors";
 import { Names } from "../common/names";
 import { ExternalId } from "../common/external-id";
+import {Genre} from "../../genre/genre.model";
+import {Country} from "../../country/country.model";
 
 @Table({ tableName: 'film' })
 export class Movie extends Model<Movie> {
+
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id: number;
 
@@ -33,7 +37,7 @@ export class Movie extends Model<Movie> {
   @Column({ type: DataType.JSONB, allowNull: true })
   rating: Rating;
 
-  @Column({ field: 'movie_length', type: DataType.INTEGER, allowNull: true })
+  @Column({ field: 'film_length', type: DataType.INTEGER, allowNull: true })
   movieLength: number;
 
   @Column({ field: 'age_rating', type: DataType.INTEGER, allowNull: true })
@@ -83,6 +87,26 @@ export class Movie extends Model<Movie> {
 
   @Column({ type: DataType.INTEGER, allowNull: true })
   top250: number;
+
+
+  // многие-ко-многим
+  // связываем Movie с Genre через таблицу film_genre
+  @BelongsToMany(
+      () => Genre,
+      'film_genre',
+      'film_id',
+      'genre_id')
+  genres: Genre[];           // поле: тип
+
+
+  // многие-ко-многим
+  // связываем Movie с Country через таблицу film_country
+  @BelongsToMany(
+      () => Country,
+      'film_country',
+      'film_id',
+      'country_id')
+  countries: Country[];           // поле: тип
 
   /*
   @ForeignKey(() => Poster)

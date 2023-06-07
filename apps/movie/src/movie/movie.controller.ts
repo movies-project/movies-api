@@ -49,6 +49,7 @@ export class MovieController {
         return movie;
     }
 
+
     @Get('/random')
     @UsePipes(new LimitValidationPipe(
         movieConfig.MOVIE_LIST_LIMIT.minLimit,
@@ -60,17 +61,62 @@ export class MovieController {
         return await this.movieService.findRandom(limit);
     }
 
+
     @Get()
     @UsePipes(new LimitValidationPipe(
         movieConfig.MOVIE_LIST_LIMIT.minLimit,
         movieConfig.MOVIE_LIST_LIMIT.maxLimit))
-    @ApiOperation({summary: 'Список фильмов'})
+    @ApiOperation({summary: 'Получить список фильмов'})
     @ApiOkResponse({description: 'Получен список фильмов'})
-    @ApiQuery({name: 'limit', required: false, type: Number, description: 'Количество возвращенных фильмов'})
-    @ApiQuery({name: 'offset', required: false, type: Number, description: 'Количество пропускаемых фильмов'})
-    async getMovies(@Query('limit') limit: number,
+    @ApiQuery({
+        name: 'genre_id', required: false, type: [Number],
+        description: 'Идентификатор жанра'
+    })
+    @ApiQuery({
+        name: 'country_id', required: false, type: [Number],
+        description: 'Идентификатор страны'
+    })
+    @ApiQuery({
+        name: 'min_rating', required: false, type: Number, example: '7.3',
+        description: 'Рейтинг, начиная от которого искать'
+    })
+    @ApiQuery({
+        name: 'min_votes', required: false, type: Number,
+        description: 'Количество оценок, начиная от которого искать'
+    })
+    @ApiQuery({
+        name: 'search_string', required: false, type: String,
+        description: 'Строка для поиска названия фильма'
+    })
+    @ApiQuery({
+        name: 'sort_field', required: false, type: String,
+        enum: ['votes', 'rating', 'year', 'name'],
+        description: 'Поле, по которому нужно отсортировать\n\n' +
+            'Доступные поля:\n' +
+            '* votes - сортирует по votes.kp по убыванию\n' +
+            '* rating - сортирует по rating.kp по убыванию\n' +
+            '* year - по убыванию\n' +
+            '* name - по алфавиту\n'
+    })
+    @ApiQuery({
+        name: 'limit', required: false, type: Number,
+        description: 'Количество возвращаемых фильмов'
+    })
+    @ApiQuery({
+        name: 'offset', required: false, type: Number,
+        description: 'Количество пропускаемых фильмов'
+    })
+    async getMovies(@Query('genre_id') genreIds: string[],
+                    @Query('country_id') countryIds: string[],
+                    @Query('min_rating') minRating: string,
+                    @Query('min_votes') minVotes: string,
+                    @Query('search_string') searchString: string,
+                    @Query('sort_field') sortField: string,
+                    @Query('limit') limit: number,
                     @Query('offset') offset: number): Promise<Movie[]> {
-        return await this.movieService.getMovies(limit, offset);
+        return await this.movieService.getMovies(
+            genreIds, countryIds, minRating,
+            minVotes, searchString, sortField, limit, offset);
     }
 
     @Get('/best')

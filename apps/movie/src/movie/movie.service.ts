@@ -231,12 +231,12 @@ export class MovieService {
             order: [
                 [
                     literal(`
-            COALESCE(rating.kp, 0) +
-            COALESCE(rating.imdb, 0) +
-            COALESCE(rating.tmdb, 0) +
-            COALESCE(rating.filmCritics, 0) +
-            COALESCE(rating.russianFilmCritics, 0) +
-            COALESCE(rating.await, 0)
+            COALESCE(rating->>'kp', '0')::numeric +
+            COALESCE(rating->>'imdb', '0')::numeric +
+            COALESCE(rating->>'tmdb', '0')::numeric +
+            COALESCE(rating->>'filmCritics', '0')::numeric +
+            COALESCE(rating->>'russianFilmCritics', '0')::numeric +
+            COALESCE(rating->>'await', '0')::numeric
           `),
                     'DESC',
                 ],

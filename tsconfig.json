@@ -65,6 +65,12 @@
       ],
       "@app/profile-shared/*": [
         "libs/profile-shared/src/*"
+      ],
+      "@app/interceptors": [
+        "libs/interceptors/src"
+      ],
+      "@app/interceptors/*": [
+        "libs/interceptors/src/*"
       ]
     }
   }

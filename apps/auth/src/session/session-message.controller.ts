@@ -27,4 +27,11 @@ export class SessionMessageController {
     );
   }
 
+  @MessagePattern(sessionPatterns.VERIFY_REFRESH_TOKEN)
+  async verifyRefreshToken(@Payload() refreshToken: string)
+    : Promise<VerificationTokenResult>
+  {
+    return this.sessionService.verifyRefreshToken(refreshToken);
+  }
+
 }

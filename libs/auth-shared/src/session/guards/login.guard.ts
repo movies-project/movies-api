@@ -13,6 +13,7 @@ import {
   CredentialsAuthenticatedRequest
 } from "@app/auth-shared/session/interfaces/credentials-authenticated-request.interface";
 import { InvalidCredentialsException } from "@app/auth-shared/session/common/invalid-credentials-exception";
+import { SharedModule } from "@app/shared";
 
 export function LoginGuard() {
   @Injectable()
@@ -47,8 +48,14 @@ export function LoginGuard() {
   }
 
   return applyDecorators(
-    UseGuards(LoginGuard),
-    ApiBody({ type: AuthCredentialsDto, description: 'Данные авторизации' }),
-    ApiUnauthorizedResponse( { description: 'Неверные учетные данные' })
+    UseGuards(LoginGuardMixin),
+    ApiBody({
+      description: 'Данные авторизации',
+      type: AuthCredentialsDto
+    }),
+    ApiUnauthorizedResponse( {
+      description: 'Неверные учетные данные',
+      type: SharedModule.generateDocsByHttpException(new InvalidCredentialsException())
+    })
   );
 }

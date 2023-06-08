@@ -1,3 +1,8 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class AccessTokenResponseDto {
-  accessToken: string;
+  @ApiProperty({
+    description: 'Токен доступа'
+  })
+  readonly accessToken: string;
 }

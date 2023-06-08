@@ -1,4 +1,9 @@
-import { PartialType } from "@nestjs/swagger";
-import { MovieBaseDto } from "./base-movie.dto";
+import { Movie } from "../models/movie.model";
+import { IntersectionType, PartialType, PickType } from "@nestjs/swagger";
 
-export class UpdateMovieDto extends PartialType(MovieBaseDto) {}
+export class UpdateMovieDto extends IntersectionType(
+  PickType(Movie, ['name', 'nameEn']),
+  PartialType(
+    PickType(Movie,['names'])
+  )
+) {}

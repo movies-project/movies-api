@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, Request } from "@nestjs/common";
 import {
   ApiBearerAuth, ApiBody,
   ApiNoContentResponse,
@@ -18,7 +18,9 @@ import {
 
 import { SessionService } from "./session.service";
 import { AccessTokenResponseDto } from "./dto/access-token-response.dto";
-import { AuthResponseDto } from "./dto/auth-response.dto";
+import { TokenPairResponseDto } from "@app/auth-shared/session/dto/token-pair-response.dto";
+import { RefreshTokenGuard } from "@app/auth-shared/session/guards/refresh-token.guard";
+import { RefreshTokenDto } from "@app/auth-shared/session/dto/refresh-token.dto";
 
 @ApiTags('Сессии')
 @Controller('session')
@@ -28,26 +30,32 @@ export class SessionController {
   @Post('/login')
   @LoginGuard()
   @ApiOperation({ summary: 'Авторизация пользователя' })
-  @ApiOkResponse({ description: 'Успешная авторизация пользователя' })
-  @ApiUnauthorizedResponse( { description: 'Неверные данные для входа' })
-  @ApiBody({ type: AuthCredentialsDto, description: 'Данные для входа' })
-  async login(@Request() req: CredentialsAuthenticatedRequest): Promise<AuthResponseDto> {
+  @ApiOkResponse({
+    description: 'Успешная авторизация пользователя',
+    type: TokenPairResponseDto
+  })
+  async login(@Request() req: CredentialsAuthenticatedRequest): Promise<TokenPairResponseDto> {
     return this.sessionService.login(req.user);
   }
 
   @Post('/access-token/update')
+  @RefreshTokenGuard()
   @ApiOperation({ summary: 'Генерация токена доступа' })
-  @ApiOkResponse({ description: 'Успешная генерация токена доступа' })
+  @ApiOkResponse({
+    description: 'Успешная генерация токена доступа',
+    type: AccessTokenResponseDto
+  })
   @ApiUnauthorizedResponse( { description: 'Невалидный refresh token'})
-  async refreshAccessToken(@Body('refreshToken') refreshToken: string)
+  async refreshAccessToken(@Body() data: RefreshTokenDto)
     : Promise<AccessTokenResponseDto>
   {
     return {
-      accessToken: await this.sessionService.generateAccessToken(refreshToken)
+      accessToken: await this.sessionService.generateAccessToken(data.refreshToken)
     };
   }
 
   @Post('/logout')
+  @HttpCode(204)
   @JwtAuthGuard()
   @ApiOperation({ summary: 'Выход из аккаунта' })
   @ApiNoContentResponse({ description: 'Успешный выход из системы' })
@@ -60,6 +68,7 @@ export class SessionController {
   }
 
   @Post('/logoutAll')
+  @HttpCode(204)
   @JwtAuthGuard()
   @ApiOperation({ summary: 'Выход из всех устройств' })
   @ApiNoContentResponse({ description: 'Успешный выход из всех устройств' })

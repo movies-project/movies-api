@@ -27,4 +27,10 @@ export class SessionSharedService {
     );
   }
 
+  async verifyRefreshToken(refreshToken: string): Promise<VerificationTokenResult> {
+    return await firstValueFrom(
+      this.authService.send(sessionPatterns.VERIFY_REFRESH_TOKEN, refreshToken)
+    );
+  }
+
 }

@@ -1,10 +1,20 @@
-import { applyDecorators, HttpException, INestApplication, Module } from "@nestjs/common";
+import {
+  applyDecorators, CallHandler,
+  ExecutionContext,
+  HttpException,
+  INestApplication,
+  Injectable,
+  Module,
+  NestInterceptor
+} from "@nestjs/common";
 import { SharedService } from './shared.service';
 import { RmqOptions } from "@nestjs/microservices";
 import { ApiProperty, DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { DocsConfig } from "@app/config/swagger.config";
 import * as url from "url";
 import * as _ from "lodash";
+import { map, Observable } from "rxjs";
+import { Model } from "sequelize";
 
 @Module({
   imports: [],
@@ -12,6 +22,26 @@ import * as _ from "lodash";
   exports: [SharedService],
 })
 export class SharedModule {
+
+  static removeTimestamps(data: any, depth: boolean = false): any {
+    const FIELDS_TO_BE_REMOVED = ['createdAt', 'updatedAt'];
+
+    data = _.omit(data, FIELDS_TO_BE_REMOVED);
+    if (data instanceof Model)
+      data = _.omit(data.dataValues, FIELDS_TO_BE_REMOVED);
+
+    if (!depth)
+      return data;
+
+    if (typeof data === 'object') {
+      Object.keys(data).forEach(key => {
+        data[key] = SharedModule.removeTimestamps(data[key]);
+      });
+    }
+
+    return data;
+  }
+
   static assignQueueToRmqOptions(rmqOptions: RmqOptions, queue: string): RmqOptions {
     const newRmqOptions = _.cloneDeep<RmqOptions>(rmqOptions);
     newRmqOptions.options.queue = queue;

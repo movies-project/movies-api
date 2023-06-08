@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
+import { Movie } from "../models/movie.model";
 import { IsNotEmpty } from "class-validator";
-import { MovieBaseDto } from "./base-movie.dto";
 
-export class CreateMovieDto extends PartialType(MovieBaseDto) {
+export class CreateMovieDto extends PartialType(Movie) {
   @ApiProperty({ required: true })
   @IsNotEmpty()
   readonly name: string;

@@ -144,6 +144,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/profile-shared/tsconfig.lib.json"
       }
+    },
+    "interceptors": {
+      "type": "library",
+      "root": "libs/interceptors",
+      "entryFile": "index",
+      "sourceRoot": "libs/interceptors/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/interceptors/tsconfig.lib.json"
+      }
     }
   }
 }

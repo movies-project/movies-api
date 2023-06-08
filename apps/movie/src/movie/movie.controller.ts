@@ -5,7 +5,7 @@ import {
     Get,
     HttpCode,
     NotFoundException,
-    Param,
+    Param, ParseIntPipe,
     Post,
     Put,
     Query,
@@ -30,6 +30,8 @@ import {ApiNoContentResponse} from "@nestjs/swagger/dist/decorators/api-response
 import {movieConfig} from "./config/movie.config";
 import {LimitValidationPipe} from "@app/pipes/limit-validation.pipe";
 import {ADMIN_ROLE, JwtAuthGuard} from "@app/auth-shared/session/guards/jwt.guard";
+import { SharedModule } from "@app/shared";
+import { MovieNotFoundException } from "./common/movie-not-found-exception";
 
 @ApiTags('Фильмы')
 @Controller('movies')
@@ -37,37 +39,65 @@ export class MovieController {
     constructor(private readonly movieService: MovieService) {
     }
 
+    @Get('/random')
+    @UsePipes(new LimitValidationPipe(
+      movieConfig.MOVIE_LIST_LIMIT.minLimit,
+      movieConfig.MOVIE_LIST_LIMIT.maxLimit))
+    @ApiOperation({summary: 'Получить случайный фильм из БД'})
+    @ApiOkResponse({
+        description: 'Случайный фильм найден',
+        type: [Movie]
+    })
+    @ApiQuery({name: 'limit', required: true, type: Number, description: 'Количество случайных фильмов'})
+    async findRandom(@Query('limit', ParseIntPipe) limit: number): Promise<Movie[]> {
+        return await this.movieService.findRandom(limit);
+    }
+
+    @Get('/best')
+    @UsePipes(new LimitValidationPipe(
+      movieConfig.MOVIE_LIST_LIMIT.minLimit,
+      movieConfig.MOVIE_LIST_LIMIT.maxLimit))
+    @ApiOperation({summary: 'Список лучших фильмов'})
+    @ApiOkResponse({
+        description: 'Получен список фильмов',
+        type: [Movie]
+    })
+    @ApiQuery({name: 'limit', required: false, type: Number, description: 'Количество возвращенных фильмов'})
+    @ApiQuery({name: 'offset', required: false, type: Number, description: 'Количество пропускаемых фильмов'})
+    async getBestMovies(@Query('limit', ParseIntPipe) limit: number,
+                        @Query('offset',ParseIntPipe) offset: number)
+      : Promise<Movie[]>
+    {
+        return await this.movieService.getBestMovies(limit, offset);
+    }
+
     @Get('/:id')
     @ApiOperation({summary: 'Поиск по id'})
-    @ApiOkResponse({description: 'Фильм найден'})
-    @ApiNotFoundResponse({description: 'Фильм не найден'})
+    @ApiOkResponse({
+        description: 'Фильм найден',
+        type: Movie
+    })
+    @ApiNotFoundResponse({
+        description: 'Фильм не найден',
+        type: SharedModule.generateDocsByHttpException(new MovieNotFoundException())
+    })
     @ApiParam({name: 'id', required: true, type: Number, description: 'Идентификатор фильма'})
     async findOne(@Param('id') id: number): Promise<Movie> {
         const movie: Movie = await this.movieService.findOne(id);
         if (!movie)
-            throw new NotFoundException('Фильм не найден');
+            throw new MovieNotFoundException();
         return movie;
     }
-
-
-    @Get('/random')
-    @UsePipes(new LimitValidationPipe(
-        movieConfig.MOVIE_LIST_LIMIT.minLimit,
-        movieConfig.MOVIE_LIST_LIMIT.maxLimit))
-    @ApiOperation({summary: 'Получить случайный фильм из БД'})
-    @ApiOkResponse({description: 'Случайный фильм найден'})
-    @ApiQuery({name: 'limit', required: true, type: Number, description: 'Количество случайных фильмов'})
-    async findRandom(@Query('limit') limit: number): Promise<Movie[]> {
-        return await this.movieService.findRandom(limit);
-    }
-
 
     @Get()
     @UsePipes(new LimitValidationPipe(
         movieConfig.MOVIE_LIST_LIMIT.minLimit,
         movieConfig.MOVIE_LIST_LIMIT.maxLimit))
     @ApiOperation({summary: 'Получить список фильмов'})
-    @ApiOkResponse({description: 'Получен список фильмов'})
+    @ApiOkResponse({
+        description: 'Получен список фильмов',
+        type: [Movie]
+    })
     @ApiQuery({
         name: 'genre_id', required: false, type: [Number],
         description: 'Идентификатор жанра'
@@ -92,11 +122,11 @@ export class MovieController {
         name: 'sort_field', required: false, type: String,
         enum: ['votes', 'rating', 'year', 'name'],
         description: 'Поле, по которому нужно отсортировать\n\n' +
-            'Доступные поля:\n' +
-            '* votes - сортирует по votes.kp по убыванию\n' +
-            '* rating - сортирует по rating.kp по убыванию\n' +
-            '* year - по убыванию\n' +
-            '* name - по алфавиту\n'
+          'Доступные поля:\n' +
+          '* votes - сортирует по votes.kp по убыванию\n' +
+          '* rating - сортирует по rating.kp по убыванию\n' +
+          '* year - по убыванию\n' +
+          '* name - по алфавиту\n'
     })
     @ApiQuery({
         name: 'limit', required: false, type: Number,
@@ -115,27 +145,17 @@ export class MovieController {
                     @Query('limit') limit: number,
                     @Query('offset') offset: number): Promise<Movie[]> {
         return await this.movieService.getMovies(
-            genreIds, countryIds, minRating,
-            minVotes, searchString, sortField, limit, offset);
-    }
-
-    @Get('/best')
-    @UsePipes(new LimitValidationPipe(
-        movieConfig.MOVIE_LIST_LIMIT.minLimit,
-        movieConfig.MOVIE_LIST_LIMIT.maxLimit))
-    @ApiOperation({summary: 'Список лучших фильмов'})
-    @ApiOkResponse({description: 'Получен список фильмов'})
-    @ApiQuery({name: 'limit', required: false, type: Number, description: 'Количество возвращенных фильмов'})
-    @ApiQuery({name: 'offset', required: false, type: Number, description: 'Количество пропускаемых фильмов'})
-    async getBestMovies(@Query('limit') limit: number,
-                        @Query('offset') offset: number): Promise<Movie[]> {
-        return await this.movieService.getBestMovies(limit, offset);
+          genreIds, countryIds, minRating,
+          minVotes, searchString, sortField, limit, offset);
     }
 
     @Post()
     @JwtAuthGuard(ADMIN_ROLE)
     @ApiOperation({summary: 'Создать фильм', description: "Требуется роль: admin"})
-    @ApiCreatedResponse({description: 'Новый фильм успешно создан'})
+    @ApiCreatedResponse({
+        description: 'Новый фильм успешно создан',
+        type: Movie
+    })
     @ApiBearerAuth()
     async create(@Body() data: CreateMovieDto): Promise<Movie> {
         return await this.movieService.create(data);
@@ -144,8 +164,14 @@ export class MovieController {
     @Put('/:id')
     @JwtAuthGuard(ADMIN_ROLE)
     @ApiOperation({summary: 'Изменить данные фильма', description: "Требуется роль: admin"})
-    @ApiOkResponse({description: 'Данные фильмы изменены'})
-    @ApiNotFoundResponse({description: 'Фильм не найден'})
+    @ApiOkResponse({
+        description: 'Данные фильма изменены',
+        type: Movie
+    })
+    @ApiNotFoundResponse({
+        description: 'Фильм не найден',
+        type: SharedModule.generateDocsByHttpException(new MovieNotFoundException())
+    })
     @ApiParam({name: 'id', required: true, type: Number, description: 'Идентификатор фильма'})
     @ApiBody({required: true, type: UpdateMovieDto, description: 'Новые данные фильма'})
     @ApiBearerAuth()
@@ -161,12 +187,15 @@ export class MovieController {
     @JwtAuthGuard(ADMIN_ROLE)
     @ApiOperation({summary: 'Удалить фильм', description: "Требуется роль: admin"})
     @ApiNoContentResponse({description: 'Фильм удален'})
-    @ApiNotFoundResponse({description: 'Фильм не найден'})
+    @ApiNotFoundResponse({
+        description: 'Фильм не найден',
+        type: SharedModule.generateDocsByHttpException(new MovieNotFoundException())
+    })
     @ApiParam({name: 'id', required: true, type: Number, description: 'Идентификатор фильма'})
     @ApiBearerAuth()
     async delete(@Param('id') id: number): Promise<void> {
         const result: boolean = await this.movieService.delete(id);
         if (!result)
-            throw new NotFoundException('Фильм не найден');
+            throw new MovieNotFoundException();
     }
 }

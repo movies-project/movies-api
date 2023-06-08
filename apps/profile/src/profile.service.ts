@@ -7,6 +7,7 @@ import { SessionSharedService } from "@app/auth-shared/session/session-shared.se
 import { UserSharedService } from "@app/auth-shared/user/user-shared.service";
 import { ProfileRegistrationResponseDto } from "./dto/profile-registration-response.dto";
 import { ProfileRegistrationDto } from "./dto/profile-registration.dto";
+import { User } from "@app/auth-shared/user/models/user.model";
 
 @Injectable()
 export class ProfileService {
@@ -20,8 +21,9 @@ export class ProfileService {
   async createProfileAndUser(data: ProfileRegistrationDto): Promise<ProfileRegistrationResponseDto> {
     // Произведем отбор необходимых данных (email, password) для создания пользователя
     const userData = { email: data.email, password: data.password };
+
     // Отправим запрос на создание пользователя на соответствующий микросервис
-    const user =  await this.userSharedService.createUser(userData);
+    const user = await this.userSharedService.createUser(userData);
     const { passwordHash, ...userWithSafeFields } = user;
 
     // Создадим профиль в базе данных
@@ -34,7 +36,7 @@ export class ProfileService {
     return {
       tokens,
       profile,
-      user: userWithSafeFields
+      user: <User>userWithSafeFields
     };
   }
 

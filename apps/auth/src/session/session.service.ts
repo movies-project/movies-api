@@ -35,10 +35,7 @@ export class SessionService {
 
   async generateAccessToken(refreshToken: string): Promise<string> {
     // Раскодируем токен
-    const decodedData = await this.verifyRefreshToken(refreshToken);
-    if (!decodedData.authorized)
-      return;
-    const decodedRefreshToken = decodedData.token;
+    const { token: decodedRefreshToken } = await this.verifyRefreshToken(refreshToken);
 
     const payload = {
       // Сохраняем все данные пользователя из refreshToken, включая сессию

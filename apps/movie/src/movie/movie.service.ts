@@ -38,13 +38,24 @@ export class MovieService {
             id,
             {
                 attributes: {exclude: ['updatedAt', 'createdAt', 'idkp']},    // исключить поля
-                include: {
-                    all: true,                      // добавить все поля всех моделей, которые связаны
-                    attributes: {exclude: ['updatedAt', 'createdAt']},    // исключить поля
-                    through: {
-                        attributes: [],      // исключаем поля с промежуточными таблицами
+                include: [
+                    {
+                        all: true,                      // добавить все поля всех моделей, которые связаны
+                        attributes: {exclude: ['updatedAt', 'createdAt']},    // исключить поля
+                        through: {
+                            attributes: [],      // исключаем поля с промежуточными таблицами
+                        },
                     },
-                },
+                    {
+                        // отдельная настройка для similarMovies
+                        model: Movie,
+                        duplicating: true,      // true - использовать подзапрос, не преобразовать в простой join, для корректной работы limit
+                        attributes: ['id', 'name', 'nameEn', 'alternativeName', 'type'],
+                        through: {
+                            attributes: [],      // исключаем поле film_similar_film из результатов запроса
+                        },
+                    }
+                ],
             });
     }
 
@@ -176,14 +187,24 @@ export class MovieService {
                     [Op.in]: movieIds
                 },
             },
-            include: {
-                all: true,                      // добавить все поля всех моделей, которые связаны
-                attributes: {exclude: ['updatedAt', 'createdAt']},    // исключить поля
-                through: {
-                    attributes: [],      // исключаем поля с промежуточными таблицами
+            include: [
+                {
+                    all: true,                      // добавить все поля всех моделей, которые связаны
+                    attributes: {exclude: ['updatedAt', 'createdAt']},    // исключить поля
+                    through: {
+                        attributes: [],      // исключаем поля с промежуточными таблицами
+                    },
+                    duplicating: false,      // false - не использовать подзапрос, преобразовать в простой join
                 },
-                duplicating: false,      // false - не использовать подзапрос, преобразовать в простой join
-            },
+                {
+                    // отдельная настройка для similarMovies
+                    model: Movie,
+                    duplicating: true,      // true - использовать подзапрос, не преобразовать в простой join, для корректной работы limit
+                    attributes: ['id', 'name', 'nameEn', 'alternativeName', 'type'],
+                    through: {
+                        attributes: [],      // исключаем поле film_similar_film из результатов запроса
+                    },
+                }],
             attributes: {exclude: ['updatedAt', 'createdAt', 'idkp']},    // исключить поля
         })
 

@@ -108,6 +108,15 @@ export class Movie extends Model<Movie> {
       'country_id')
   countries: Country[];           // поле: тип
 
+  // многие-ко-многим
+  // связываем Movie с Movie через таблицу film_similar_film
+  @BelongsToMany(
+      () => Movie,
+      'film_similar_film',
+      'film_id',
+      'similar_film_id')
+  similarMovies: Movie[];           // поле: тип
+
   /*
   @ForeignKey(() => Poster)
   @Column({ type: DataType.INTEGER, allowNull: false })

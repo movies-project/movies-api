@@ -15,9 +15,8 @@ export class SingleLevelTimestampsInterceptor implements NestInterceptor {
   }
 
   public removeTimestamps(data: any): any {
-    const FIELDS_TO_BE_REMOVED = ['createdAt', 'updatedAt'];
     if (data instanceof Model) {
-      return _.omit(data.dataValues, FIELDS_TO_BE_REMOVED);
+      return RemoveTimestampsInterceptor.removeTimestamps(data);
     }
 
     if (typeof data === 'object') {

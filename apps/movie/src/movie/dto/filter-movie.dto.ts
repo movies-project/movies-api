@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNumberString, IsOptional, IsString } from "class-validator";
 
 export class FilterMovieDto {
+
   @ApiProperty({
     required: false,
     type: [Number],
@@ -11,6 +12,7 @@ export class FilterMovieDto {
   @IsString({ each: true })
   genreIds?: string[];
 
+
   @ApiProperty({
     required: false,
     type: [Number],
@@ -19,6 +21,7 @@ export class FilterMovieDto {
   @IsOptional()
   @IsString({ each: true })
   countryIds?: string[];
+
 
   @ApiProperty({
     required: false,
@@ -30,6 +33,7 @@ export class FilterMovieDto {
   @IsNumberString()
   minRating?: string;
 
+
   @ApiProperty({
     required: false,
     type: Number,
@@ -38,6 +42,7 @@ export class FilterMovieDto {
   @IsOptional()
   @IsNumberString()
   minVotes?: string;
+
 
   @ApiProperty({
     required: false,
@@ -48,11 +53,12 @@ export class FilterMovieDto {
   @IsString()
   searchString?: string;
 
+
   @ApiProperty({
     required: false,
     type: String,
     enum: ['votes', 'rating', 'year', 'name'],
-    description: 'Поле, по которому нужно отсортировать\n\n' +
+    description: 'Поле, по которому отсортировать\n\n' +
       'Доступные поля:\n' +
       '* votes - сортирует по votes.kp по убыванию\n' +
       '* rating - сортирует по rating.kp по убыванию\n' +

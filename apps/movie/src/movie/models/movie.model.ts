@@ -11,7 +11,12 @@ import {Genre} from "../../genre/genre.model";
 import {Country} from "../../country/country.model";
 import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
 
-@Table({ tableName: 'film' })
+@Table({
+  tableName: 'film',
+  defaultScope: {
+    attributes: { exclude: ['idkp']}
+  }
+})
 export class Movie extends Model<Movie> {
 
   @ApiProperty({
@@ -21,10 +26,6 @@ export class Movie extends Model<Movie> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id: number;
 
-  @ApiProperty({
-    description: 'ID кинопоиска',
-    example: 535341
-  })
   @Column({ type: DataType.INTEGER, allowNull: false })
   idkp: number;
 
@@ -204,6 +205,15 @@ export class Movie extends Model<Movie> {
   top250: number;
 
 
+  @ApiProperty({
+    description: 'Жанры',
+    type: Genre,
+    example: [{
+      "id": 1,
+      "name": "фантастика",
+      "name_en": "fantastic"
+    }]
+  })
   // многие-ко-многим
   // связываем Movie с Genre через таблицу film_genre
   @BelongsToMany(
@@ -214,6 +224,15 @@ export class Movie extends Model<Movie> {
   genres: Genre[];           // поле: тип
 
 
+  @ApiProperty({
+    description: 'Страны',
+    type: Country,
+    example: [{
+        "id": 1,
+        "name": "Австралия",
+        "name_en": "Australia"
+      }]
+  })
   // многие-ко-многим
   // связываем Movie с Country через таблицу film_country
   @BelongsToMany(
@@ -223,6 +242,17 @@ export class Movie extends Model<Movie> {
       'country_id')
   countries: Country[];           // поле: тип
 
+  @ApiProperty({
+    description: 'Связанные фильмы',
+    type: Movie,
+    example: [{
+      "id": 1,
+      "name": "Простая история",
+      "nameEn": "The Straight Story",
+      "alternativeName": "The Straight Story",
+      "type": "tv-series"
+    }]
+  })
   // многие-ко-многим
   // связываем Movie с Movie через таблицу film_similar_film
   @BelongsToMany(

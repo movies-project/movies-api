@@ -9,7 +9,7 @@ import {
     Post,
     Put,
     Query,
-    UsePipes
+    UsePipes, ValidationPipe
 } from "@nestjs/common";
 import {
     ApiBearerAuth,
@@ -32,6 +32,7 @@ import {LimitValidationPipe} from "@app/pipes/limit-validation.pipe";
 import {ADMIN_ROLE, JwtAuthGuard} from "@app/auth-shared/session/guards/jwt.guard";
 import { SharedModule } from "@app/shared";
 import { MovieNotFoundException } from "./common/movie-not-found-exception";
+import { FilterMovieDto } from "./dto/filter-movie.dto";
 
 @ApiTags('Фильмы')
 @Controller('movies')
@@ -64,9 +65,9 @@ export class MovieController {
     })
     @ApiQuery({name: 'limit', required: false, type: Number, description: 'Количество возвращенных фильмов'})
     @ApiQuery({name: 'offset', required: false, type: Number, description: 'Количество пропускаемых фильмов'})
-    async getBestMovies(@Query('limit', ParseIntPipe) limit: number,
-                        @Query('offset',ParseIntPipe) offset: number)
-      : Promise<Movie[]>
+    async getBestMovies(
+      @Query('limit', ParseIntPipe) limit: number,
+      @Query('offset',ParseIntPipe) offset: number): Promise<Movie[]>
     {
         return await this.movieService.getBestMovies(limit, offset);
     }
@@ -98,55 +99,14 @@ export class MovieController {
         description: 'Получен список фильмов',
         type: [Movie]
     })
-    @ApiQuery({
-        name: 'genre_id', required: false, type: [Number],
-        description: 'Идентификатор жанра'
-    })
-    @ApiQuery({
-        name: 'country_id', required: false, type: [Number],
-        description: 'Идентификатор страны'
-    })
-    @ApiQuery({
-        name: 'min_rating', required: false, type: Number, example: '7.3',
-        description: 'Рейтинг, начиная от которого искать'
-    })
-    @ApiQuery({
-        name: 'min_votes', required: false, type: Number,
-        description: 'Количество оценок, начиная от которого искать'
-    })
-    @ApiQuery({
-        name: 'search_string', required: false, type: String,
-        description: 'Строка для поиска названия фильма'
-    })
-    @ApiQuery({
-        name: 'sort_field', required: false, type: String,
-        enum: ['votes', 'rating', 'year', 'name'],
-        description: 'Поле, по которому нужно отсортировать\n\n' +
-          'Доступные поля:\n' +
-          '* votes - сортирует по votes.kp по убыванию\n' +
-          '* rating - сортирует по rating.kp по убыванию\n' +
-          '* year - по убыванию\n' +
-          '* name - по алфавиту\n'
-    })
-    @ApiQuery({
-        name: 'limit', required: false, type: Number,
-        description: 'Количество возвращаемых фильмов'
-    })
-    @ApiQuery({
-        name: 'offset', required: false, type: Number,
-        description: 'Количество пропускаемых фильмов'
-    })
-    async getMovies(@Query('genre_id') genreIds: string[],
-                    @Query('country_id') countryIds: string[],
-                    @Query('min_rating') minRating: string,
-                    @Query('min_votes') minVotes: string,
-                    @Query('search_string') searchString: string,
-                    @Query('sort_field') sortField: string,
+    @ApiQuery({name: 'limit', required: false, type: Number, description: 'Количество возвращенных фильмов'})
+    @ApiQuery({name: 'offset', required: false, type: Number, description: 'Количество пропускаемых фильмов'})
+    async getMovies(@Query() filterParams: FilterMovieDto,
                     @Query('limit') limit: number,
-                    @Query('offset') offset: number): Promise<Movie[]> {
-        return await this.movieService.getMovies(
-          genreIds, countryIds, minRating,
-          minVotes, searchString, sortField, limit, offset);
+                    @Query('offset') offset: number)
+      : Promise<Movie[]>
+    {
+        return await this.movieService.getMovies(filterParams, limit, offset);
     }
 
     @Post()

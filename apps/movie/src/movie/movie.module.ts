@@ -4,6 +4,7 @@ import { Movie } from "./models/movie.model";
 import { MovieController } from "./movie.controller";
 import { MovieService } from "./movie.service";
 import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
+import { ExtendedMovieRepository } from "./extended-movie.repository";
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
     AuthSharedModule
   ],
   controllers: [MovieController],
-  providers: [MovieService],
+  providers: [MovieService, ExtendedMovieRepository]
 })
 export class MovieModule {}

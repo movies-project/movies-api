@@ -43,7 +43,7 @@ export class ExtendedMovieRepository {
   async findOneWithRelations(options: FindOptions<Attributes<Movie>>)
     : Promise<Movie>
   {
-    const movies = this.findAllWithRelations(options);
+    const movies = await this.findAllWithRelations(options);
     if (movies)
       return movies[0];
   }

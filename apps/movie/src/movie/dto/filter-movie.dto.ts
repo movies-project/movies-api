@@ -10,7 +10,7 @@ export class FilterMovieDto {
   })
   @IsOptional()
   @IsString({ each: true })
-  genreIds?: string[];
+  genreId?: string[];
 
 
   @ApiProperty({
@@ -20,7 +20,7 @@ export class FilterMovieDto {
   })
   @IsOptional()
   @IsString({ each: true })
-  countryIds?: string[];
+  countryId?: string[];
 
 
   @ApiProperty({

@@ -71,8 +71,8 @@ export class MovieService {
       } : undefined;
 
     // преобразуем одно значение в массив
-    filterParams.genreIds = convertToArray(filterParams.genreIds);
-    filterParams.countryIds = convertToArray(filterParams.countryIds);
+    filterParams.genreId = convertToArray(filterParams.genreId);
+    filterParams.countryId = convertToArray(filterParams.countryId);
 
     let commonFilters = {
       ...makeFilter(
@@ -102,7 +102,7 @@ export class MovieService {
       include: [
         {
           model: Genre,
-          where: makeFilter('id', Op.in, filterParams.genreIds),
+          where: makeFilter('id', Op.in, filterParams.genreId),
           duplicating: true,      // true - использовать подзапрос, не преобразовать в простой join, для корректной работы limit
           through: {
             attributes: [],      // исключаем поле film_genre из результатов запроса
@@ -110,7 +110,7 @@ export class MovieService {
         },
         {
           model: Country,
-          where: makeFilter('id', Op.in, filterParams.countryIds),
+          where: makeFilter('id', Op.in, filterParams.countryId),
           duplicating: true,      // true - использовать подзапрос, не преобразовать в простой join, для корректной работы limit
           through: {
             attributes: [],      // исключаем поле film_country из результатов запроса

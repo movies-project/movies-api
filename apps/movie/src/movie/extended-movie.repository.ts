@@ -16,10 +16,11 @@ export class ExtendedMovieRepository {
   async findAllWithRelations(options: FindOptions<Attributes<Movie>>, duplicating = true)
     : Promise<Movie[]>
   {
+    const fieldsUpdatedAtCreatedAt = ['updatedAt', 'createdAt']
     const includeOptions = <Includeable[]>[
       {
         all: true, // добавить все поля всех моделей, которые связаны
-        attributes: {exclude: ['updatedAt', 'createdAt']}, // исключить поля
+        attributes: {exclude: [].concat(fieldsUpdatedAtCreatedAt)}, // исключить поля
         through: {
           attributes: [], // исключаем поля с промежуточными таблицами
         },
@@ -37,6 +38,7 @@ export class ExtendedMovieRepository {
     ];
     // объединяем includeOptions и options.include из аргументов
     options.include = includeOptions.concat(options.include ?? []);
+    options.attributes = {exclude: [].concat(fieldsUpdatedAtCreatedAt)}    // исключить поля
     return this.repository.findAll(options);
   }
 

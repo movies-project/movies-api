@@ -1,7 +1,7 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Repository} from "sequelize-typescript";
-import {literal, Op} from "sequelize";
+import {Op} from "sequelize";
 import {OrderItem} from "sequelize/types/model";
 import {InjectRedis} from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
@@ -13,8 +13,8 @@ import {CreateMovieDto} from "./dto/create-movie.dto";
 import {UpdateMovieDto} from "./dto/update-movie.dto";
 import {redisConfig} from "@app/config/redis.config";
 import {movieConfig} from "./config/movie.config";
-import { FilterMovieDto } from "./dto/filter-movie.dto";
-import { ExtendedMovieRepository } from "./extended-movie.repository";
+import {FilterMovieDto} from "./dto/filter-movie.dto";
+import {ExtendedMovieRepository} from "./extended-movie.repository";
 
 @Injectable()
 export class MovieService {
@@ -35,8 +35,16 @@ export class MovieService {
     return `bestMovies:${timestamp}`;
   }
 
+
   async findOne(id: number): Promise<Movie> {
-    return await this.extendedMovieRepository.findOneWithRelations({ where: { id } });
+    id = Number(id)
+    return await this.extendedMovieRepository.findOneWithRelations({
+      where: {
+        id:{
+          [Op.eq]: id
+        }
+      }
+    });
   }
 
   async findRandom(limit?: number): Promise<Movie[]> {
@@ -47,8 +55,7 @@ export class MovieService {
   }
 
   async getMovies(filterParams: FilterMovieDto, limit: number, offset: number)
-    : Promise<Movie[]>
-  {
+    : Promise<Movie[]> {
     // Копируем объект, чтобы изменения не отразились в других участках кода
     filterParams = {...filterParams};
 
@@ -57,16 +64,26 @@ export class MovieService {
     }
 
     const makeFilter = (field: string, op: symbol, value: any) =>
-      value ? { [field]: { [op]: value } } : undefined;
+      value ? {
+        [field]: {
+          [op]: value
+        }
+      } : undefined;
 
     // преобразуем одно значение в массив
     filterParams.genreIds = convertToArray(filterParams.genreIds);
     filterParams.countryIds = convertToArray(filterParams.countryIds);
 
     let commonFilters = {
-      ...makeFilter('rating.kp', Op.gte, Number(filterParams.minRating?.replace(',', '.'))),
-      ...makeFilter('votes.kp', Op.gte, Number(filterParams.minVotes)),
-      ...makeFilter('name', Op.startsWith, filterParams.searchString),
+      ...makeFilter(
+          'rating.kp',
+          Op.gte,       // >=
+          Number(filterParams.minRating?.replace(',', '.'))
+      ),
+      ...makeFilter(
+          'votes.kp', Op.gte, Number(filterParams.minVotes)),     // >=
+      ...makeFilter(
+          'name', Op.startsWith, filterParams.searchString),
     };
 
     const sortFieldsMap: Record<string, OrderItem> = {
@@ -110,7 +127,11 @@ export class MovieService {
 
     // возвращаем все фильмы с этими id, включая все их жанры и страны
     return this.extendedMovieRepository.findAllWithRelations({
-      where: { id: { [Op.in]: movieIds } }
+      where: {
+        id: {
+          [Op.in]: movieIds
+        }
+      },
     }, false);
   }
 

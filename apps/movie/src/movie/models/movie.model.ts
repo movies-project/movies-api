@@ -26,7 +26,7 @@ export class Movie extends Model<Movie> {
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true })
   id: number;
 
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: true })
   idkp: number;
 
   @ApiProperty({

@@ -3,7 +3,13 @@ import { Movie } from "../models/movie.model";
 import { IsNotEmpty } from "class-validator";
 
 export class CreateMovieDto
-  extends PartialType(OmitType(Movie, ['id', 'idkp']))
+  extends PartialType(OmitType(Movie, [
+    'id',
+    'idkp',
+    'genres',
+    'countries',
+    'similarMovies'
+  ]))
 {
   @ApiProperty({ required: true })
   @IsNotEmpty()

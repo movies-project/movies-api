@@ -54,10 +54,15 @@ export class Country extends Model<Country, CountryCreationAttrs> {
     // многие-ко-многим
     // связываем Country с Movie через таблицу film_country
     @BelongsToMany(
-        () => Movie,
-        'film_country',
-        'country_id',
-        'film_id')
+      () => Movie,
+      {
+          through: 'film_country',
+          foreignKey: 'country_id',
+          otherKey: 'film_id',
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE'
+      }
+    )
     movies: Movie[];           // поле: тип
 
 }

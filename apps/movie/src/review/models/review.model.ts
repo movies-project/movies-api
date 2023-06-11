@@ -36,6 +36,13 @@ export class Review extends Model<Review> {
   @Column({ field: 'fk_film_id', type: DataType.INTEGER, allowNull: false })
   movieId: number;
 
-  @HasMany(() => Comment, 'fk_review_id')
+  @HasMany(
+    () => Comment,
+    {
+        foreignKey: 'fk_review_id',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      }
+  )
   comments: Comment[];
 }

@@ -54,10 +54,14 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
     // многие-ко-многим
     // связываем Genre с Movie через таблицу film_genre
     @BelongsToMany(
-        () => Movie,
-        'film_genre',
-        'genre_id',
-        'film_id')
+      () => Movie,
+      {
+          through: 'film_genre',
+          foreignKey: 'genre_id',
+          otherKey: 'film_id',
+          onDelete: 'CASCADE',
+          onUpdate: 'CASCADE'
+      })
     movies: Movie[];           // поле: тип
 
 }

@@ -29,11 +29,11 @@ import {Comment} from "./models/comment.model";
 import {CreateReviewDto} from "./dto/create-review.dto";
 import {ResourceType, ReviewOwnerGuard} from "./guards/review-owner.guard";
 import {ReviewStructureType} from "./common/review-structure-type";
-import {CommentDto} from "./dto/comment.dto";
 import {reviewConfig} from "./config/review.config";
 import {LimitValidationPipe} from "@app/pipes/limit-validation.pipe";
 import {JwtAuthGuard} from "@app/auth-shared/session/guards/jwt.guard";
 import {AuthenticatedRequest} from "@app/auth-shared/session/interfaces/authenticated-request.interface";
+import { CreateCommentDto } from "./dto/create-comment.dto";
 
 
 @ApiTags('Отзывы и комментарии')
@@ -147,7 +147,7 @@ export class ReviewController {
     description: 'Идентификатор отзыва'
   })
   async createComment(@Param('reviewId') reviewId: number,
-                      @Body() data: CommentDto,
+                      @Body() data: CreateCommentDto,
                       @Request() req: AuthenticatedRequest): Promise<Comment> {
     return await this.reviewService.createComment(reviewId, data, req.accessTokenData.user.id);
   }

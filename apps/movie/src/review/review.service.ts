@@ -3,12 +3,11 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Repository} from "sequelize-typescript";
 
 import {ReviewStructureType} from "./common/review-structure-type";
-import {CommentDto} from "./dto/comment.dto";
 import {CreateReviewDto} from "./dto/create-review.dto";
 import {Review} from "./models/review.model";
 import {Comment} from "./models/comment.model";
 import {ProfileSharedService} from "@app/profile-shared/profile-shared.service";
-
+import { CreateCommentDto } from "./dto/create-comment.dto";
 
 @Injectable()
 export class ReviewService {
@@ -67,13 +66,11 @@ export class ReviewService {
       const depthMap = new Map<string, number>();
 
       for (const comment of review.comments) {
-        if (!comment.id)
-          continue;
         commentMap.set(comment.id, {...comment.dataValues, answers: []});
 
         // Этот код вычисления глубины комментария безопасен, так как
         // parent любого комментария находится в таблице БД раньше чем ответ на него
-        const depth = !comment.parentId ? 1 : (depthMap.get(comment.parentId) || 0) + 1;
+        const depth = !comment.parentId ? 1 : (+depthMap.get(comment.parentId) || 0) + 1;
         depthMap.set(comment.id, depth);
       }
 
@@ -124,7 +121,7 @@ export class ReviewService {
   }
 
   async createComment(reviewId: number,
-                      data: CommentDto,
+                      data: CreateCommentDto,
                       userId: number): Promise<Comment> {
     const profile = await this.profileSharedService.findByUserId(userId);
     return await this.commentRepository.create({

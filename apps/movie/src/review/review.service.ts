@@ -1,33 +1,43 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/sequelize";
-import { ClientProxy } from "@nestjs/microservices";
-import { Repository } from "sequelize-typescript";
-import { firstValueFrom } from "rxjs";
-import { rabbitmqConfig } from "@app/config";
-import { ReviewStructureType } from "./common/review-structure-type";
-import { CommentDto } from "./dto/comment.dto";
-import { ReviewDto } from "./dto/review.dto";
-import { Review } from "./models/review.model";
-import { Comment } from "./models/comment.model";
-import { ProfileSharedService } from "@app/profile-shared/profile-shared.service";
+import {Injectable} from "@nestjs/common";
+import {InjectModel} from "@nestjs/sequelize";
+import {Repository} from "sequelize-typescript";
+
+import {ReviewStructureType} from "./common/review-structure-type";
+import {CommentDto} from "./dto/comment.dto";
+import {CreateReviewDto} from "./dto/create-review.dto";
+import {Review} from "./models/review.model";
+import {Comment} from "./models/comment.model";
+import {ProfileSharedService} from "@app/profile-shared/profile-shared.service";
+
 
 @Injectable()
 export class ReviewService {
+
   constructor(
-    @InjectModel(Review)
-    private readonly reviewRepository: Repository<Review>,
-    @InjectModel(Comment)
-    private readonly commentRepository: Repository<Comment>,
-    private readonly profileSharedService: ProfileSharedService
-  ) {}
+      @InjectModel(Review)
+      private readonly reviewRepository: Repository<Review>,
+      @InjectModel(Comment)
+      private readonly commentRepository: Repository<Comment>,
+      private readonly profileSharedService: ProfileSharedService
+  ) {
+  }
 
   async findReview(reviewId: number): Promise<Review> {
-    return await this.reviewRepository.findByPk(reviewId);
+    return await this.reviewRepository.findByPk(
+        reviewId,
+        {
+          include: [{
+            model: Comment,
+            attributes: {exclude: ['updatedAt']},  // исключаем поля
+          }],
+          attributes: {exclude: ['updatedAt', 'createdAt']},  // исключаем поля
+        }
+    );
   }
 
   async findComment(reviewId: string, commentId: number): Promise<Comment> {
     return await this.commentRepository.findOne({
-      where: { id: commentId, reviewId: reviewId }
+      where: {id: commentId, reviewId: reviewId}
     });
   }
 
@@ -38,8 +48,10 @@ export class ReviewService {
       },
       include: [{
         model: Comment,
-        as: 'comments'
+        as: 'comments',
+        attributes: {exclude: ['updatedAt','fk_review_id']},  // исключаем поля
       }],
+      attributes: {exclude: ['updatedAt', 'createdAt']},  // исключаем поля
       limit,
       offset
     });
@@ -57,7 +69,7 @@ export class ReviewService {
       for (const comment of review.comments) {
         if (!comment.id)
           continue;
-        commentMap.set(comment.id, { ...comment.dataValues, answers: [] } );
+        commentMap.set(comment.id, {...comment.dataValues, answers: []});
 
         // Этот код вычисления глубины комментария безопасен, так как
         // parent любого комментария находится в таблице БД раньше чем ответ на него
@@ -89,7 +101,8 @@ export class ReviewService {
     return reviews;
   }
 
-  async getReviews(movieId: number, limit: number, offset: number, view: ReviewStructureType): Promise<Review[]> {
+  async getReviews(movieId: number, limit: number, offset: number,
+                   view: ReviewStructureType): Promise<Review[]> {
     switch (view) {
       case ReviewStructureType.Flat:
         return this.getFlatReviews(movieId, limit, offset);
@@ -100,7 +113,7 @@ export class ReviewService {
     }
   }
 
-  async createReview(data: ReviewDto, userId: number): Promise<Review> {
+  async createReview(data: CreateReviewDto, userId: number): Promise<Review> {
     const profile = await this.profileSharedService.findByUserId(userId);
     return await this.reviewRepository.create({
       date: new Date(),
@@ -110,25 +123,32 @@ export class ReviewService {
     });
   }
 
-  async createComment(data: CommentDto, userId: number): Promise<Comment> {
+  async createComment(reviewId: number,
+                      data: CommentDto,
+                      userId: number): Promise<Comment> {
     const profile = await this.profileSharedService.findByUserId(userId);
     return await this.commentRepository.create({
       date: new Date(),
       author: `${profile.name} ${profile.surname}`,
       userId,
+      reviewId,
       ...data
     });
   }
 
   async deleteReview(reviewId: number): Promise<boolean> {
-    return !!await this.reviewRepository.destroy({
-      where: { id: reviewId }
-    });
+    return Boolean(
+        await this.reviewRepository.destroy({
+          where: {id: reviewId}
+        })
+    );
   }
 
   async deleteComment(reviewId: string, commentId: number): Promise<boolean> {
-    return !!await this.commentRepository.destroy({
-      where: { id: commentId, reviewId: reviewId }
-    });
+    return Boolean(
+        await this.commentRepository.destroy({
+          where: {id: commentId, reviewId: reviewId}
+        })
+    );
   }
 }

@@ -36,10 +36,10 @@ export function ReviewOwnerGuard(resourceType: ResourceType) {
       if (resourceType === ResourceType.Review) {
         const review = await this.reviewService.findReview(request.body.reviewId);
         if (!review) {
-          throw new NotFoundException('Обзор не найден');
+          throw new NotFoundException('Отзыв не найден');
         }
         if (review.userId == request.accessTokenData.user.id) {
-          throw new ForbiddenException('Доступ к обзору запрещен');
+          throw new ForbiddenException('Доступ к отзыву запрещен');
         }
       } else if (resourceType === ResourceType.Comment) {
         const comment = await this.reviewService.findComment(request.body.reviewId, request.body.commentId);
@@ -57,7 +57,7 @@ export function ReviewOwnerGuard(resourceType: ResourceType) {
   return applyDecorators(
     UseGuards(ReviewOwnerGuardMixin),
     ApiUnauthorizedResponse( { description: 'Невалидный токен доступа' }),
-    ApiNotFoundResponse({ description: 'Обзор/комментарий не найден' }),
-    ApiForbiddenResponse({ description: 'Доступ к обзору/комментарию запрещен' })
+    ApiNotFoundResponse({ description: 'Отзыв/комментарий не найден' }),
+    ApiForbiddenResponse({ description: 'Доступ к отзыву/комментарию запрещен' })
   );
 }

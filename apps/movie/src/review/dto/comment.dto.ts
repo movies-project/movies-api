@@ -1,23 +1,16 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional } from "class-validator";
+import {IntersectionType, PartialType, PickType} from "@nestjs/swagger";
+import {IsNotEmpty, IsOptional} from "class-validator";
+import {Comment} from "../models/comment.model";
 
-export class CommentDto {
-  @ApiProperty({
-    description: 'Комментарий',
-    example: 'Не согласен с обзором выше...'
-  })
+export class CommentDto extends IntersectionType(
+    PickType(Comment, ['comment']),
+    PartialType(
+        PickType(Comment, ['parentId'])
+    )) {
+
+  @IsNotEmpty()
   readonly comment: string;
 
-  @ApiProperty({
-    description: 'ID обзора',
-    example: 0
-  })
-  readonly reviewId: number;
-
-  @ApiProperty({
-    description: 'ID коментария на который был написан этот ответ',
-    example: null
-  })
   @IsOptional()
   readonly parentId: string;
 }

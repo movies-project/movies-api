@@ -1,8 +1,7 @@
 import { Body, Controller, HttpCode, Post, Request } from "@nestjs/common";
 import {
-  ApiBearerAuth, ApiBody,
+  ApiBearerAuth,
   ApiNoContentResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse
@@ -11,7 +10,6 @@ import {
 import { AuthenticatedRequest } from "@app/auth-shared/session/interfaces/authenticated-request.interface";
 import { JwtAuthGuard } from "@app/auth-shared/session/guards/jwt.guard";
 import { LoginGuard } from "@app/auth-shared/session/guards/login.guard";
-import { AuthCredentialsDto } from "@app/auth-shared/session/dto/auth-credentials.dto";
 import {
   CredentialsAuthenticatedRequest
 } from "@app/auth-shared/session/interfaces/credentials-authenticated-request.interface";
@@ -21,6 +19,7 @@ import { AccessTokenResponseDto } from "./dto/access-token-response.dto";
 import { TokenPairResponseDto } from "@app/auth-shared/session/dto/token-pair-response.dto";
 import { RefreshTokenGuard } from "@app/auth-shared/session/guards/refresh-token.guard";
 import { RefreshTokenDto } from "@app/auth-shared/session/dto/refresh-token.dto";
+import {ApiCreatedResponse} from "@nestjs/swagger/dist/decorators/api-response.decorator";
 
 @ApiTags('Сессии')
 @Controller('session')
@@ -30,7 +29,7 @@ export class SessionController {
   @Post('/login')
   @LoginGuard()
   @ApiOperation({ summary: 'Авторизация пользователя' })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: 'Успешная авторизация пользователя',
     type: TokenPairResponseDto
   })
@@ -41,7 +40,7 @@ export class SessionController {
   @Post('/access-token/update')
   @RefreshTokenGuard()
   @ApiOperation({ summary: 'Генерация токена доступа' })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: 'Успешная генерация токена доступа',
     type: AccessTokenResponseDto
   })

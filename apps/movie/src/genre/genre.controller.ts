@@ -37,7 +37,9 @@ export class GenreController {
 
 
     @Put('/:id')
-    @ApiOperation({summary: 'Редактировать жанр по id'})      // документирование swagger
+    @ApiOperation({
+        summary: 'Редактировать жанр по id',
+        description: "Требуется роль: admin"})      // документирование swagger
     @ApiOkResponse({            // 200
         type: Genre
     })

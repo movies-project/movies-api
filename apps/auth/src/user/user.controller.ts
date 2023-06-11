@@ -15,7 +15,9 @@ export class UserController {
   @Get('/self')
   @JwtAuthGuard()
   @UseInterceptors(RemoveTimestampsInterceptor)
-  @ApiOperation({ summary: 'Получение собственных пользовательских данных' })
+  @ApiOperation({
+    summary: 'Получение собственных пользовательских данных',
+    description: 'Требуется accessToken' })
   @ApiOkResponse({
     description: 'Успешное получение пользовательских данных',
     type: User

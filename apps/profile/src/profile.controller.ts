@@ -44,7 +44,9 @@ export class ProfileController {
   @Get('/self')
   @JwtAuthGuard()
   @UseInterceptors(RemoveTimestampsInterceptor)
-  @ApiOperation({ summary: 'Получение собственного профиля' })
+  @ApiOperation({
+    summary: 'Получение собственного профиля',
+    description: 'Требуется accessToken' })
   @ApiOkResponse({
     description: 'Успешное получение профиля',
     type: Profile

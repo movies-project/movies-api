@@ -9,7 +9,7 @@ import {
     Post,
     Put,
     Query,
-    UsePipes, ValidationPipe
+    UsePipes
 } from "@nestjs/common";
 import {
     ApiBearerAuth,
@@ -104,8 +104,7 @@ export class MovieController {
     async getMovies(@Query() filterParams: FilterMovieDto,
                     @Query('limit') limit: number,
                     @Query('offset') offset: number)
-      : Promise<Movie[]>
-    {
+      : Promise<Movie[]> {
         return await this.movieService.getMovies(filterParams, limit, offset);
     }
 

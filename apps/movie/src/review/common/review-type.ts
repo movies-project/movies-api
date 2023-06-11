@@ -1,5 +1,5 @@
 export enum ReviewType {
-  Positive = 'Положительный',
-  Negative = 'Отрицательный',
+  Positive = 'Позитивный',
+  Negative = 'Негативный',
   Neutral = 'Нейтральный'
 }

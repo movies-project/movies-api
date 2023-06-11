@@ -23,9 +23,19 @@ const REDIS_MOVIE_OPTIONS = <RedisModuleOptions>{
   },
 }
 
+const BULL_REDIS_NAMESPACE = 'bull';
+const REDIS_BULL_OPTIONS = <RedisModuleOptions>{
+  config: <RedisClientOptions>{
+    namespace: BULL_REDIS_NAMESPACE,
+    ...DEFAULT_REDIS_OPTIONS
+  },
+}
+
 export const redisConfig = {
   AUTH_REDIS_NAMESPACE,
   REDIS_AUTH_OPTIONS,
   MOVIE_REDIS_NAMESPACE,
-  REDIS_MOVIE_OPTIONS
+  REDIS_MOVIE_OPTIONS,
+  BULL_REDIS_NAMESPACE,
+  REDIS_BULL_OPTIONS
 }

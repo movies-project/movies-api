@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Repository} from "sequelize-typescript";
 import {Op} from "sequelize";
@@ -15,7 +15,6 @@ import {redisConfig} from "@app/config/redis.config";
 import {movieConfig} from "./config/movie.config";
 import {FilterMovieDto} from "./dto/filter-movie.dto";
 import {ExtendedMovieRepository} from "./extended-movie.repository";
-
 @Injectable()
 export class MovieService {
 
@@ -25,16 +24,16 @@ export class MovieService {
     @Inject(ExtendedMovieRepository)
     private readonly extendedMovieRepository: ExtendedMovieRepository,
     @InjectRedis(redisConfig.MOVIE_REDIS_NAMESPACE)
-    private readonly redis: Redis
+    private readonly redis: Redis,
+
   ) {}
 
   // Версия данных для ключей Redis
-  private redisTimestamp: number = Date.now();
+  redisTimestamp: number = Date.now();
 
-  private static getBestMoviesRedisKey(timestamp: number) {
+  static getBestMoviesRedisKey(timestamp: number) {
     return `bestMovies:${timestamp}`;
   }
-
 
   async findOne(id: number): Promise<Movie> {
     id = Number(id)
@@ -138,33 +137,15 @@ export class MovieService {
 
   async getBestMovies(limit: number, offset: number): Promise<Movie[]> {
     const bestMoviesRedisKey = MovieService.getBestMoviesRedisKey(this.redisTimestamp);
-    if (await this.redis.exists(bestMoviesRedisKey)) {
-      // Получение закэшированных данных из Redis
-      const cachedMovies = await this.redis.zrange(bestMoviesRedisKey, offset, offset + limit - 1);
 
-      return cachedMovies.map(movie => JSON.parse(movie));
-    }
+    // Если ключ не найден, то выбрасываем ошибку
+    if (!await this.redis.exists(bestMoviesRedisKey))
+      throw new InternalServerErrorException();
 
-    // Получение данных из БД
-    const currentYear = new Date().getFullYear();
-    const movies = await this.extendedMovieRepository.findBestMoviesWithRelations({
-      where: {
-        year: {
-          [Op.gte]: currentYear - 10
-        }
-      },
-      limit: movieConfig.REDIS_MAX_CACHED_BEST_MOVIES
-    });
+    // Получение закэшированных данных из Redis
+    const cachedMovies = await this.redis.zrange(bestMoviesRedisKey, offset, offset + limit - 1);
 
-    // Сохраяем полученные фильмы в базу данных Redis
-    for (const [index, movie] of movies.entries()) {
-      await this.redis.zadd(bestMoviesRedisKey, index, JSON.stringify(movie));
-    }
-
-    // Делаем ключ валидным только в течении 24 часов
-    await this.redis.expire(bestMoviesRedisKey, 60 * 60 * 24);
-
-    return movies.slice(offset, offset + limit);
+    return cachedMovies.map(movie => JSON.parse(movie));
   }
 
   async create(data: CreateMovieDto): Promise<Movie> {

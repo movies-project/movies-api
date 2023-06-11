@@ -5,13 +5,21 @@ import { MovieController } from "./movie.controller";
 import { MovieService } from "./movie.service";
 import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
 import { ExtendedMovieRepository } from "./extended-movie.repository";
+import { BullModule } from "@nestjs/bull";
+import { bullConfig } from "@app/config/bull.config";
+import { MovieProcessor } from "./movie.processor";
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Movie]),
-    AuthSharedModule
+    AuthSharedModule,
+    BullModule.registerQueue(bullConfig.BULL_MOVIE_OPTIONS)
   ],
   controllers: [MovieController],
-  providers: [MovieService, ExtendedMovieRepository]
+  providers: [
+    MovieService,
+    MovieProcessor,
+    ExtendedMovieRepository
+  ]
 })
 export class MovieModule {}

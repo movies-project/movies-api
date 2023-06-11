@@ -26,6 +26,9 @@ export class Comment extends Model<Comment> {
   @Column({ field: 'fk_review_id', type: DataType.INTEGER, allowNull: false })
   reviewId: number;
 
-  @BelongsTo(() => Review)
+  @BelongsTo(() => Review, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
   review: Review;
 }

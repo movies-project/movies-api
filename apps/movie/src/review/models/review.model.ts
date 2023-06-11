@@ -1,4 +1,4 @@
-import { Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, HasMany, Model, Table } from "sequelize-typescript";
 import { Movie } from "../../movie/models/movie.model";
 import { ReviewType } from "../common/review-type";
 import { Comment } from "./comment.model";
@@ -36,13 +36,12 @@ export class Review extends Model<Review> {
   @Column({ field: 'fk_film_id', type: DataType.INTEGER, allowNull: false })
   movieId: number;
 
-  @HasMany(
-    () => Comment,
-    {
-        foreignKey: 'fk_review_id',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
-      }
-  )
+  @HasMany(() => Comment, 'fk_review_id')
   comments: Comment[];
+
+  @BelongsTo(() => Movie, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+  })
+  movie: Movie;
 }

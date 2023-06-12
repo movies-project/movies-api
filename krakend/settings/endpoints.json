@@ -109,6 +109,24 @@
             "method": "DELETE"
         },
         {
+            "endpoint": "/movies/{id}/trailers",
+            "backend": "/movies/{id}/trailers",
+            "host": "http://movie:3003",
+            "method": "POST"
+        },
+        {
+            "endpoint": "/movies/{id}/trailers/{trailerId}",
+            "backend": "/movies/{id}/trailers/{trailerId}",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
+            "endpoint": "/movies/{id}/trailers",
+            "backend": "/movies/{id}/trailers",
+            "host": "http://movie:3003",
+            "method": "GET"
+        },
+        {
             "endpoint": "/reviews/{reviewId}",
             "backend": "/reviews/{reviewId}",
             "host": "http://movie:3003",

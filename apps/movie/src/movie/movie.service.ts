@@ -1,4 +1,8 @@
-import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from "@nestjs/common";
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Repository} from "sequelize-typescript";
 import {Op} from "sequelize";
@@ -6,13 +10,14 @@ import {OrderItem} from "sequelize/types/model";
 import {InjectRedis} from "@liaoliaots/nestjs-redis";
 import Redis from "ioredis";
 
+import { MediaSharedService } from "@app/media-shared/media-shared.service";
+import { Trailer } from "./models/trailer.model";
 import {Movie} from "./models/movie.model";
 import {Genre} from "../genre/genre.model";
 import {Country} from "../country/country.model";
 import {CreateMovieDto} from "./dto/create-movie.dto";
 import {UpdateMovieDto} from "./dto/update-movie.dto";
 import {redisConfig} from "@app/config/redis.config";
-import {movieConfig} from "./config/movie.config";
 import {FilterMovieDto} from "./dto/filter-movie.dto";
 import {ExtendedMovieRepository} from "./extended-movie.repository";
 @Injectable()
@@ -25,6 +30,7 @@ export class MovieService {
     private readonly extendedMovieRepository: ExtendedMovieRepository,
     @InjectRedis(redisConfig.MOVIE_REDIS_NAMESPACE)
     private readonly redis: Redis,
+    private readonly mediaSharedService: MediaSharedService
 
   ) {}
 
@@ -165,4 +171,34 @@ export class MovieService {
       await this.movieRepository.destroy({ where: { id } })
     );
   }
+
+  async addTrailer(movieId: number, file: Express.Multer.File): Promise<Trailer> {
+    const fileModel = await this.mediaSharedService.create('trailer', file);
+    return await Trailer.create({
+      movieId,
+      fileId: fileModel.id
+    });
+  }
+
+  async getTrailer(movieId: number, trailerId: number, res: Response): Promise<Trailer> {
+    const trailer: Trailer = await Trailer.findOne({
+      where: {
+        movieId,
+        id: trailerId
+      }
+    });
+    if (!trailer)
+      return;
+    await this.mediaSharedService.download(res, 'trailer', trailerId);
+    return trailer;
+  }
+
+  async getTrailers(movieId: number): Promise<Trailer[]> {
+    return await Trailer.findAll({
+      where: {
+        movieId
+      }
+    });
+  }
+
 }

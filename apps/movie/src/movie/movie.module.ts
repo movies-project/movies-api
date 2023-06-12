@@ -7,12 +7,15 @@ import { AuthSharedModule } from "@app/auth-shared/auth-shared.module";
 import { ExtendedMovieRepository } from "./extended-movie.repository";
 import { BullModule } from "@nestjs/bull";
 import { bullConfig } from "@app/config/bull.config";
+import { MediaSharedModule } from "@app/media-shared/media-shared.module";
 import { MovieProcessor } from "./movie.processor";
+import { Trailer } from "./models/trailer.model";
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([Movie]),
+    SequelizeModule.forFeature([Movie, Trailer]),
     AuthSharedModule,
+    MediaSharedModule,
     BullModule.registerQueue(bullConfig.BULL_MOVIE_OPTIONS)
   ],
   controllers: [MovieController],

@@ -25,18 +25,6 @@ services:
     networks:
       - network_movie
 
-  media:
-    container_name: media_movie
-    build:
-      context: .
-      dockerfile: ./apps/media/Dockerfile
-    restart: always
-    env_file:
-      - .env
-    command: npm run start:dev media --prefix /usr/src/server
-    networks:
-      - network_movie
-
   movie:
     container_name: movie_movie
     build:
@@ -50,6 +38,8 @@ services:
     command: npm run start:dev movie --prefix /usr/src/server
     networks:
       - network_movie
+    volumes:
+      - movie_data:/usr/src/server/storage/
 
   person:
     container_name: person_movie
@@ -139,6 +129,7 @@ volumes:
   pg_data:
   rabbit_data:
   redis_data:
+  movie_data:
 
 networks:
   network_movie:

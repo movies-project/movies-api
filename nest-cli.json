@@ -46,15 +46,6 @@
         "tsConfigPath": "apps/person/tsconfig.app.json"
       }
     },
-    "media": {
-      "type": "application",
-      "root": "apps/media",
-      "entryFile": "main",
-      "sourceRoot": "apps/media/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/media/tsconfig.app.json"
-      }
-    },
     "shared": {
       "type": "library",
       "root": "libs/shared",
@@ -152,6 +143,15 @@
       "sourceRoot": "libs/interceptors/src",
       "compilerOptions": {
         "tsConfigPath": "libs/interceptors/tsconfig.lib.json"
+      }
+    },
+    "media-shared": {
+      "type": "library",
+      "root": "libs/media-shared",
+      "entryFile": "index",
+      "sourceRoot": "libs/media-shared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/media-shared/tsconfig.lib.json"
       }
     }
   }

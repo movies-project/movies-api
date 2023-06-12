@@ -333,6 +333,60 @@
         },
         
         {
+        "endpoint": "/movies/{id}/trailers",
+        "output_encoding": "no-op",
+        "method": "POST",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/movies/{id}/trailers",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/movies/{id}/trailers/{trailerId}",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/movies/{id}/trailers/{trailerId}",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
+        "endpoint": "/movies/{id}/trailers",
+        "output_encoding": "no-op",
+        "method": "GET",
+        "input_query_strings": ["*"],
+        "input_headers": ["Authorization", "Content-Type"],
+        "backend": [{
+            "encoding": "no-op",
+            "url_pattern": "/movies/{id}/trailers",
+            "host": [
+                "http://movie:3003"
+            ],
+            "extra_config": {
+                
+            }
+        }]
+        },
+        
+        {
         "endpoint": "/reviews/{reviewId}",
         "output_encoding": "no-op",
         "method": "GET",

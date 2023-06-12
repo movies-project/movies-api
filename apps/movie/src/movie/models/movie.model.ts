@@ -1,4 +1,4 @@
-import {Model, Table, Column, DataType, BelongsToMany} from "sequelize-typescript";
+import { Model, Table, Column, DataType, BelongsToMany, HasMany } from "sequelize-typescript";
 
 import { Rating } from "../common/rating";
 import { Fee, Fees } from "../common/fee";
@@ -10,6 +10,7 @@ import { ExternalId } from "../common/external-id";
 import {Genre} from "../../genre/genre.model";
 import {Country} from "../../country/country.model";
 import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
+import { Trailer } from "./trailer.model";
 
 @Table({
   tableName: 'film',
@@ -261,6 +262,12 @@ export class Movie extends Model<Movie> {
       'film_id',
       'similar_film_id')
   similarMovies: Movie[];           // поле: тип
+
+  // один-ко-многим
+  @HasMany(
+    () => Trailer
+  )
+  trailers: Trailer[];           // поле: тип
 
   /*
   @ForeignKey(() => Poster)

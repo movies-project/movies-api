@@ -23,4 +23,8 @@ export const postgresConfig = {
     ...POSTGRES_BASE_OPTIONS,
     database: 'movies',
   },
+  MEDIA_DB_OPTIONS: <SequelizeModuleOptions>{
+    ...POSTGRES_BASE_OPTIONS,
+    database: 'media',
+  },
 }

@@ -71,6 +71,12 @@
       ],
       "@app/interceptors/*": [
         "libs/interceptors/src/*"
+      ],
+      "@app/media-shared": [
+        "libs/media-shared/src"
+      ],
+      "@app/media-shared/*": [
+        "libs/media-shared/src/*"
       ]
     }
   }

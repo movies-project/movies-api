@@ -8,12 +8,12 @@ import {
     Param, ParseIntPipe,
     Post,
     Put,
-    Query,
+    Query, Res, UploadedFile, UseInterceptors,
     UsePipes
 } from "@nestjs/common";
 import {
     ApiBearerAuth,
-    ApiBody,
+    ApiBody, ApiConsumes,
     ApiCreatedResponse,
     ApiNotFoundResponse,
     ApiOkResponse,
@@ -33,6 +33,9 @@ import {ADMIN_ROLE, JwtAuthGuard} from "@app/auth-shared/session/guards/jwt.guar
 import { SharedModule } from "@app/shared";
 import { MovieNotFoundException } from "./common/movie-not-found-exception";
 import { FilterMovieDto } from "./dto/filter-movie.dto";
+import { TrailerNotFoundException } from "./common/trailer-not-found-exception";
+import { Trailer } from "./models/trailer.model";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 @ApiTags('Фильмы')
 @Controller('movies')
@@ -156,5 +159,70 @@ export class MovieController {
         const result: boolean = await this.movieService.delete(id);
         if (!result)
             throw new MovieNotFoundException();
+    }
+
+    @Post('/:movieId/trailers')
+    @UseInterceptors(FileInterceptor('file'))
+    @JwtAuthGuard(ADMIN_ROLE)
+    @ApiConsumes('multipart/form-data')
+    @ApiOperation({summary: 'Создать трейлер', description: "Требуется роль: admin"})
+    @ApiCreatedResponse({
+        description: 'Новый трейлер успешно создан',
+        type: Trailer
+    })
+    @ApiParam({name: 'movieId', required: true, type: Number, description: 'Идентификатор фильма'})
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                }
+            }
+        }
+    })
+    @ApiBearerAuth()
+    async addTrailer(@Param('movieId') id: number, @UploadedFile() file: Express.Multer.File): Promise<Trailer> {
+        return await this.movieService.addTrailer(id, file);
+    }
+
+    @Get('/:movieId/trailers/:trailerId')
+    @ApiConsumes('application/octet-stream')
+    @ApiOperation({summary: 'Получить трейлер'})
+    @ApiOkResponse({
+        description: 'Трейлер получен',
+        type: Trailer
+    })
+    @ApiNotFoundResponse({
+        description: 'Трейлер не найден',
+        type: SharedModule.generateDocsByHttpException(new TrailerNotFoundException())
+    })
+    @ApiParam({name: 'movieId', required: true, type: Number, description: 'Идентификатор фильма'})
+    @ApiParam({name: 'trailerId', required: true, type: Number, description: 'Идентификатор трейлера'})
+    async getTrailer(
+      @Param('movieId') movieId: number,
+      @Param('trailerId') trailerId: number,
+      @Res() res: Response
+    ): Promise<Trailer>
+    {
+        const trailer = await this.movieService.getTrailer(movieId, trailerId, res);
+        if (!trailer)
+            throw new TrailerNotFoundException();
+        return trailer;
+    }
+
+    @Get('/:movieId/trailers')
+    @ApiOperation({summary: 'Получить список трейлеров'})
+    @ApiOkResponse({
+        description: 'Трейлеры получены',
+        type: [Trailer]
+    })
+    @ApiParam({name: 'movieId', required: true, type: Number, description: 'Идентификатор фильма'})
+    async getTrailers(
+      @Param('movieId') movieId: number
+    ): Promise<Trailer[]>
+    {
+        return await this.movieService.getTrailers(movieId);
     }
 }

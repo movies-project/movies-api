@@ -4,6 +4,7 @@ import { Repository } from "sequelize-typescript";
 import { Attributes, FindOptions, Includeable, OrderItem } from "sequelize/types/model";
 import { Movie } from "./models/movie.model";
 import { literal } from "sequelize";
+import { Trailer } from "./models/trailer.model";
 
 @Injectable()
 export class ExtendedMovieRepository {
@@ -25,6 +26,10 @@ export class ExtendedMovieRepository {
           attributes: [], // исключаем поля с промежуточными таблицами
         },
         duplicating: duplicating // false - не использовать подзапрос, преобразовать в простой join
+      },
+      {
+        model: Trailer,
+        attributes: {exclude: [].concat(fieldsUpdatedAtCreatedAt)}
       },
       {
         // отдельная настройка для similarMovies

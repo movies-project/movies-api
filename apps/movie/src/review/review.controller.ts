@@ -154,7 +154,7 @@ export class ReviewController {
 
   @Delete('/:reviewId')
   @HttpCode(204)
-  @ReviewOwnerGuard(ResourceType.Comment)
+  @ReviewOwnerGuard(ResourceType.Review)
   @ApiOperation({summary: 'Удалить отзыв'})
   @ApiNoContentResponse({description: 'Отзыв удален'})
   @ApiNotFoundResponse({description: 'Отзыв не найден'})

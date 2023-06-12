@@ -33,3 +33,6 @@ $ docker-compose build
 ```bash
 $ docker-compose up
 ```
+
+## Посмотреть документацию
+Посмотреть документацию можно в браузере `http://{host:порт}/docs`
